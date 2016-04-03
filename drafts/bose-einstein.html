@@ -6,14 +6,21 @@
     <meta name="description" content="Waste Books, Collected musings on math and programming.">
 
 
-        <title>All Tags | Waste Books // Collected musings on math and programming. </title>
+        <title>Rotating Bose-Einstein condensates and numerical approximation // Waste Books // Collected musings on math and programming.</title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="http://joaoloula.github.io/theme/css/pure.css">
+    <link rel="stylesheet" href="http://joaoloula.github.io/theme/css/pygments.css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
+    <script>
+        $(document).ready(function(){
+            $(".content").fitVids();
+        });
+    </script>
 </head>
 
 <body>
@@ -44,23 +51,48 @@
                 </div>
             </div>
         </div>
-  <div class="pure-u-1">
-    <div class="content">
-      <h1 class="content-subhead">All Tags</h1>
-      <ul>
+    <div class="pure-u">
+        <div class="content">
+            <section class="post">
+                <header class="post-header">
+                    <h1>Rotating Bose-Einstein condensates and numerical approximation</h1>
+                        <p class="post-meta">
+                            // under                                 <a class="post-category" href="http://joaoloula.github.io/tag/physics.html">physics</a>
+                                <a class="post-category" href="http://joaoloula.github.io/tag/python.html">python</a>
+                        </p>
+                </header>
+            </section>
+            <p>It turns out not all elementary particles are created equal. While at macroscopic scale two bodies can never occupy the same space at the same time, the analogous question at the quantum level, i.e. whether two particles can have the same state at a given moment, is much more subtle and divides all particles into two categories -- bosons and fermions (named respectively after physicists Satyendra Bose and Enrico Fermi).</p>
+<p>Code for this post can be found <a href="">here</a></p>
+<h1>Of bosons and fermions</h1>
+<p>Bosons are gregarious etc. etc. Fermions are etc. etc.</p>
+<p><insert image showing quantum state distributions for bosons and fermions></p>
+<h1>Bose-Einstein condensates</h1>
+<p>Project and code go here</p>
+            <a href="#" class="go-top">Go Top</a>
+    <div class="comments">
+        <div id="disqus_thread"></div>
+        <script type="text/javascript">
+            /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+            var disqus_shortname = "mydisqus"; // required: replace example with your forum shortname
 
-          <li><a href="http://joaoloula.github.io/tag/brownian-motion.html">brownian motion</a> (1) </li>
-          <li><a href="http://joaoloula.github.io/tag/physics.html">physics</a> (1) </li>
-          <li><a href="http://joaoloula.github.io/tag/stochastic-process.html">stochastic process</a> (1) </li>
+            /* * * DON'T EDIT BELOW THIS LINE * * */
+            (function() {
+                var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+                dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+                (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+            })();
+        </script>
+        <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+        <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    </div>
 <footer class="footer">
     <p>&copy; João Loula &ndash;
         Built with <a href="https://github.com/PurePelicanTheme/pure-single">Pure Theme</a>
         for <a href="http://blog.getpelican.com/">Pelican</a>
     </p>
-</footer>
-      </ul>
+</footer>        </div>
     </div>
-  </div>
     </div>
     <script>
         var $top = $('.go-top');
