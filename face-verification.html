@@ -5,14 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="Waste Books, Collected musings on math and programming.">
 
+        <link rel="alternate"  href="/feeds/all.atom.xml" type="application/atom+xml" title="Waste Books Full Atom Feed"/>
 
         <title>Face Verification // Waste Books // Collected musings on math and programming.</title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/font-awesome/4.1.0/css/font-awesome.min.css">
-    <link rel="stylesheet" href="http://joaoloula.github.io/theme/css/pure.css">
-    <link rel="stylesheet" href="http://joaoloula.github.io/theme/css/pygments.css">
+    <link rel="stylesheet" href="/theme/css/pure.css">
+    <link rel="stylesheet" href="/theme/css/pygments.css">
 
     <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/fitvids/1.0.1/jquery.fitvids.min.js"></script>
@@ -31,10 +32,10 @@
                     <header class="header">
                         <hgroup>
                             <img class="avatar" src="/images/joao.jpg">
-                            <h1 class="brand-main"><a href="http://joaoloula.github.io">Waste Books</a></h1>
+                            <h1 class="brand-main"><a href="">Waste Books</a></h1>
                             <p class="tagline">Collected musings on math and programming.</p>
-                                <p class="links"><a href="http://joaoloula.github.io/pages/about">About</a></p>
-                                <p class="links"><a href="http://joaoloula.github.io/pages/cv">CV</a></p>
+                                <p class="links"><a href="/pages/about">About</a></p>
+                                <p class="links"><a href="/pages/cv">CV</a></p>
                                 <p class="social">
                                     <a href="https://github.com/joaoloula">
                                         <i class="fa fa-github-square fa-3x"></i>
@@ -57,13 +58,13 @@
                 <header class="post-header">
                     <h1>Face Verification</h1>
                         <p class="post-meta">
-                            // under                                 <a class="post-category" href="http://joaoloula.github.io/tag/face-verification.html">face verification</a>
-                                <a class="post-category" href="http://joaoloula.github.io/tag/convolutional-neural-networks.html">convolutional neural networks</a>
-                                <a class="post-category" href="http://joaoloula.github.io/tag/exemplar-svms.html">exemplar svms</a>
+                            // under                                 <a class="post-category" href="/tag/face-verification.html">face verification</a>
+                                <a class="post-category" href="/tag/convolutional-neural-networks.html">convolutional neural networks</a>
+                                <a class="post-category" href="/tag/exemplar-svms.html">exemplar svms</a>
                         </p>
                 </header>
             </section>
-            <p>Code for this post can be found <a href="" title="https://github.com/Joaoloula/sparse-face-verification/tree/master">here</a></p>
+            <p>Code for this post can be found <a href="https://github.com/Joaoloula/sparse-face-verification">here</a></p>
 <h1>Introduction</h1>
 <p>Suppose we want to implement a biometric system in which, given a picture of a person's face taken by a camera, a software determines whether this person belongs to a predefined group of people who are allowed to perform a certain action -- this could be giving someone access to a building, or allowing them to start up a car or unlock a smartphone -- and takes a decision accordingly. One of the possible approaches to the system's design is to have a list of images of authorized users' faces and, when confronted with a new person, to analyze whether the image of their face matches with that of one of these users. This problem is known as <em>face verification</em>, and it's an open question that is the subject of a lot of current research in computer vision.</p>
 <p>The diversity of situations described indicate that such a software, in order to have satisfactory performance, should be robust to most variations found in real-world images: different lighting conditions, rotation, misalignment etc.</p>
