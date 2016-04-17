@@ -6,7 +6,7 @@
     <meta name="description" content="Waste Books, Collected musings on math and programming.">
 
 
-        <title>Sparse Face Verification // Waste Books // Collected musings on math and programming.</title>
+        <title>Face Verification // Waste Books // Collected musings on math and programming.</title>
 
 
     <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/pure/0.3.0/pure-min.css">
@@ -55,7 +55,7 @@
         <div class="content">
             <section class="post">
                 <header class="post-header">
-                    <h1>Sparse Face Verification</h1>
+                    <h1>Face Verification</h1>
                         <p class="post-meta">
                             // under                                 <a class="post-category" href="http://joaoloula.github.io/tag/face-verification.html">face verification</a>
                                 <a class="post-category" href="http://joaoloula.github.io/tag/convolutional-neural-networks.html">convolutional neural networks</a>
@@ -63,7 +63,7 @@
                         </p>
                 </header>
             </section>
-            <p>Code for this post can be found <a href="" title="https://github.com/Joaoloula/sparse-face-verification">here</a></p>
+            <p>Code for this post can be found <a href="" title="https://github.com/Joaoloula/sparse-face-verification/tree/master">here</a></p>
 <h1>Introduction</h1>
 <p>Suppose we want to implement a biometric system in which, given a picture of a person's face taken by a camera, a software determines whether this person belongs to a predefined group of people who are allowed to perform a certain action -- this could be giving someone access to a building, or allowing them to start up a car or unlock a smartphone -- and takes a decision accordingly. One of the possible approaches to the system's design is to have a list of images of authorized users' faces and, when confronted with a new person, to analyze whether the image of their face matches with that of one of these users. This problem is known as <em>face verification</em>, and it's an open question that is the subject of a lot of current research in computer vision.</p>
 <p>The diversity of situations described indicate that such a software, in order to have satisfactory performance, should be robust to most variations found in real-world images: different lighting conditions, rotation, misalignment etc.</p>
@@ -75,7 +75,7 @@
     <figcaption>Example of genuine (top) and impostor (bottom) pairs from the LFW dataset.</figcaption>
 </figure>
 
-<p>Framed in the domain of machine learning, the problems becomes learning the function <span class="math">\(f\)</span> from a labeled dataset comprised of genuine and impostor pairs. We evaluate three different approaches to this problem: a simple, linear model of Exemplar Support Vector Machines (SVMs), Siamese Convolutional Neural Networks (CNNs)  and the state-of-the-art identification algorithm DeepID.</p>
+<p>Framed in the domain of machine learning, the problems becomes learning the function <span class="math">\(f\)</span> from a labeled dataset comprised of genuine and impostor pairs. We'll introduce three different approaches to this problem: a simple, linear model of Exemplar Support Vector Machines (SVMs), Siamese Convolutional Neural Networks (CNNs)  and the state-of-the-art identification algorithm DeepID.</p>
 <h1>Exemplar SVMs</h1>
 <p>The simplest of the three approaches is based on a method introduced by <a href='#exemplar-svm' id='ref-exemplar-svm-1'>(Malisiewicz et al., 2011)</a>: Exemplar SVMs. The idea is to train one linear SVM classifier, that is, a hyperplane separating our data, for each exemplar in the training set, so that we end up in each case with one positive instance and lots of negatives ones. Surprisingly, this very simple idea works really well, getting results close to the state of the art at the PASCAL VOC object classification dataset at the time of its introduction.</p>
 <p>First, we run our training set through a Histogram of Oriented Gradients (HOG) descriptor. HOG descriptors are feature descriptors based on gradient detection: the image is divided into cells, in which all the pixels will "vote" for the preferred gradient by means of an histogram (the weight of each pixel's vote is proportional to the gradient magnitude). The resulting set of histograms is the descriptor, and it's been proven to be robust to many kinds of large-scale transformations and thus widely used in object and human detection <a href='#hog' id='ref-hog-1'>(Dallal and Trigs, 2005)</a>.</p>
