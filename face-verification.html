@@ -57,13 +57,17 @@
                 <header class="post-header">
                     <h1>Sparse Face Verification</h1>
                         <p class="post-meta">
-                            // under                         </p>
+                            // under                                 <a class="post-category" href="http://joaoloula.github.io/tag/face-verification.html">face verification</a>
+                                <a class="post-category" href="http://joaoloula.github.io/tag/convolutional-neural-networks.html">convolutional neural networks</a>
+                                <a class="post-category" href="http://joaoloula.github.io/tag/exemplar-svms.html">exemplar svms</a>
+                        </p>
                 </header>
             </section>
-            <h1>Introduction</h1>
-<p>Suppose we want to implement a biometric system in which, given a picture of a person's face taken by a camera, a software determines whether this person belongs to a predefined group of people who are allowed to perform a certain action -- this could be giving someone access to a building, or allowing them to start up a car or unlock a smartphone -- and takes a decision accordingly. One of the possible approaches to the system's design is to have a list of images of authorized users' faces and, when confronted with a new person, to analyze whether the image of their face matches with that of one of these users. This problem is known as \textit{face verification}, and it's an open question that is the subject of a lot of current research in computer vision.</p>
+            <p>Code for this post can be found <a href="" title="https://github.com/Joaoloula/sparse-face-verification">here</a></p>
+<h1>Introduction</h1>
+<p>Suppose we want to implement a biometric system in which, given a picture of a person's face taken by a camera, a software determines whether this person belongs to a predefined group of people who are allowed to perform a certain action -- this could be giving someone access to a building, or allowing them to start up a car or unlock a smartphone -- and takes a decision accordingly. One of the possible approaches to the system's design is to have a list of images of authorized users' faces and, when confronted with a new person, to analyze whether the image of their face matches with that of one of these users. This problem is known as <em>face verification</em>, and it's an open question that is the subject of a lot of current research in computer vision.</p>
 <p>The diversity of situations described indicate that such a software, in order to have satisfactory performance, should be robust to most variations found in real-world images: different lighting conditions, rotation, misalignment etc.</p>
-<p>If, on top of that, we also want to be able to easily add people to the authorized users group, it would be advantageous if our system was able to take the decision described earlier based on \textit{sparse} data, that is, a small number of example pictures per user in the authorized users group. That way, the process of adding users to the group would be only a matter of taking one or two pictures of their face, which would be then added to the database.</p>
+<p>If, on top of that, we also want to be able to easily add people to the authorized users group, it would be advantageous if our system was able to take the decision described earlier based on <em>sparse</em> data, that is, a small number of example pictures per user in the authorized users group. That way, the process of adding users to the group would be only a matter of taking one or two pictures of their face, which would be then added to the database.</p>
 <h1>Face Verification</h1>
 <p>Face verification can be thought of as a classification problem: given a face image space <span class="math">\(E\)</span>, we are trying to determine a function <span class="math">\(f:E\times E \rightarrow \{0, 1\}\)</span> that associates the pair <span class="math">\((x_1, x_2)\)</span> to <span class="math">\(0\)</span> if it is a genuine pair (i.e. if they represent the same person) and to <span class="math">\(1\)</span> if it is an impostor pair (i.e. if they represent images of different people).</p>
 <figure>
@@ -86,7 +90,7 @@
 <div class="math">\begin{equation}
 d({x_1}, {x_2}) = \sqrt{{(x_1-x_2)}^T{M}{(x_1-x_2)}}
 \end{equation}</div>
-<p>satisfies the properties above. This metric is called a Mahalanobis distance, and is has seen wide use in statistics in general and face verification and recognition in particular, specially in combination with Principal Component Analysis as in \citep{mahalanobis}. The characterization of M allows is to write it as a product of another matrix and its transpose, and so <span class="math">\((1)\)</span> is equivalent to:</p>
+<p>satisfies the properties above. This metric is called a Mahalanobis distance, and is has seen wide use in statistics in general and face verification and recognition in particular, specially in combination with Principal Component Analysis as in <a href='#mahalanobis' id='ref-mahalanobis-1'>(Fan et al., 2013)</a>. The characterization of M allows is to write it as a product of another matrix and its transpose, and so <span class="math">\((1)\)</span> is equivalent to:</p>
 <div class="math">\begin{equation}
 d({x_1}, {x_2}) = ||{W}{x_1}-{W}{x_2}||
 \end{equation}</div>
@@ -109,7 +113,7 @@ d({x_1}, {x_2}) = ||{W}{x_1}-{W}{x_2}||
 </figure>
 
 <p>After training on the identification task, we can remove the softmax layer and use the fully-connected DeepID layer as a descriptor for an algorithm that will perform verification on a 160-dimensional space. In Sun's paper, the method found to have the best results was the joint-bayesian model.</p>
-<p>Joint-bayesian models \citep{joint-bayesian} the class centers <span class="math">\(\mu\)</span> as well as the intra-class variations <span class="math">\(\epsilon\)</span> both follow a centered gaussian distributions, whose covariance matrices <span class="math">\(S_\mu\)</span> and <span class="math">\(S_\epsilon\)</span> are the objects we're trying to infer from the data.</p>
+<p>Joint-bayesian models <a href='#joint-bayesian' id='ref-joint-bayesian-1'>(Chen et al., 2012)</a> the class centers <span class="math">\(\mu\)</span> as well as the intra-class variations <span class="math">\(\epsilon\)</span> both follow a centered gaussian distributions, whose covariance matrices <span class="math">\(S_\mu\)</span> and <span class="math">\(S_\epsilon\)</span> are the objects we're trying to infer from the data.</p>
 <div class="math">\begin{equation}
 x = \mu + \epsilon, \; \; \mu\sim\mathcal{N}\big(0, S_\mu), \; \; \epsilon\sim\mathcal{N}\big(0, S_\epsilon)
 \end{equation}</div>
@@ -176,12 +180,18 @@ x = \mu + \epsilon, \; \; \mu\sim\mathcal{N}\big(0, S_\mu), \; \; \epsilon\sim\m
 }
 </script><hr>
 <h2>Bibliography</h2>
+<p id='joint-bayesian'>D.&nbsp;Chen, X.&nbsp;Cao, L.&nbsp;Wang, F.&nbsp;Wen, and Sun. J.
+Bayesian face revisited: a joint formulation.
+In <em>Proc. ECCV</em>. 2012. <a class="cite-backref" href="#ref-joint-bayesian-1" title="Jump back to reference 1">↩</a></p>
 <p id='siamese-cnns'>S.&nbsp;Chopra, R.&nbsp;Hadsell, and Y.&nbsp;LeCun.
 Learning a similarity metric discriminatively, with application to face verification.
 In <em>Proc. CVPR</em>. 2005. <a class="cite-backref" href="#ref-siamese-cnns-1" title="Jump back to reference 1">↩</a></p>
 <p id='hog'>N.&nbsp;Dallal and B.&nbsp;Trigs.
 Histograms of oriented gradients for human detection.
 In <em>Proc. ICCV</em>. 2005. <a class="cite-backref" href="#ref-hog-1" title="Jump back to reference 1">↩</a></p>
+<p id='mahalanobis'>Z.&nbsp;Fan, M.&nbsp;Ni, M.&nbsp;Sheng, and Z.&nbsp;Wu.
+Principal component analysis integrating mahalanobis distance for face recognition.
+In <em>Proc. RVSP</em>. 2013. <a class="cite-backref" href="#ref-mahalanobis-1" title="Jump back to reference 1">↩</a></p>
 <p id='ddml'>J.&nbsp;Hu, J.&nbsp;Lu, and Y.-P. Tan.
 Discriminative deep metric learning for face verification in the wild.
 In <em>Proc. CVPR</em>. 2014. <a class="cite-backref" href="#ref-ddml-1" title="Jump back to reference 1">↩</a></p>
