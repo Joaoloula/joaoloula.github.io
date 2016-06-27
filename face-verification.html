@@ -73,7 +73,7 @@
 <p>Face verification can be thought of as a classification problem: given a face image space <span class="math">\(E\)</span>, we are trying to determine a function <span class="math">\(f:E\times E \rightarrow \{0, 1\}\)</span> that associates the pair <span class="math">\((x_1, x_2)\)</span> to <span class="math">\(0\)</span> if it is a genuine pair (i.e. if they represent the same person) and to <span class="math">\(1\)</span> if it is an impostor pair (i.e. if they represent images of different people).</p>
 <figure>
     <img src="https://raw.githubusercontent.com/Joaoloula/sparse-face-verification/master/images/genuine-impostor.jpg" alt='missing' align='middle'/>
-    <figcaption>Example of genuine (top) and impostor (bottom) pairs from the LFW dataset.</figcaption>
+    <figcaption><sup> Example of genuine (top) and impostor (bottom) pairs from the LFW dataset (source: <a href='#title-image' id='ref-title-image-1'>(Köstinger et al., 2012)</a>).</sup></figcaption>
 </figure>
 
 <p>Framed in the domain of machine learning, the problems becomes learning the function <span class="math">\(f\)</span> from a labeled dataset comprised of genuine and impostor pairs. We'll introduce three different approaches to this problem: a simple, linear model of Exemplar Support Vector Machines (SVMs), Siamese Convolutional Neural Networks (CNNs)  and the state-of-the-art identification algorithm DeepID.</p>
@@ -83,7 +83,7 @@
 <p>The next step is to fit a linear SVM model for each positive example in the dataset. These SVMs will take as input only that positive example and the thousands of negative ones, and will try to find the hyperplane that maximizes the margin between them in the HOG feature space. The next step is to bring all these exemplar SVMs together by means of a calibration, in which we rescale our space using the validation set so that the best examples get pulled closer to our positive -- and the worst ones, further apart (without altering their order). From there, given a new image, if we want to know whether it represents a given person, we can compute a compound score for it based on all of the person's exemplar SVMs, and decide on a threshold upon which to make our decision.</p>
 <figure>
   <img src = "https://raw.githubusercontent.com/Joaoloula/sparse-face-verification/master/images/calibration.jpg" align='middle'/>
-  <figcaption> Illustration of the calibration step on an Exemplar SVM. </figcaption>
+  <figcaption><sup> Illustration of the calibration step on an Exemplar SVM <a href='#exemplar-svm' id='ref-exemplar-svm-2'>(Malisiewicz et al., 2011)</a>. </sup></figcaption>
 </figure>
 
 <h1>Siamese CNNs</h1>
@@ -100,7 +100,7 @@ d({x_1}, {x_2}) = ||{W}{x_1}-{W}{x_2}||
 <p>The idea of the Siamese CNNs architecure <a href='#siamese-cnns' id='ref-siamese-cnns-1'>(Chopra et al., 2005)</a> is to train two identical CNNs that share parameters, and whose outputs are fed to an energy function that will measure how "dissimilar" they are, upon which we'll then compute our loss function. Gradient descent on this loss propagates to the two CNNs in the same way, preserving the symmetry of the problem. </p>
 <figure>
   <img src = "https://raw.githubusercontent.com/Joaoloula/sparse-face-verification/master/images/siamese-cnns.jpg" align='middle'/>
-  <figcaption> Schema of the Siamese CNNs architecture. </figcaption>
+  <figcaption><sup> Scheme of the Siamese CNNs architecture (source: <a href='#siamese-cnns' id='ref-siamese-cnns-2'>(Chopra et al., 2005)</a>). </sup></figcaption>
 </figure>
 
 <p>In our implementation, each CNN is comprised of three convolutions, all of kernel size 6x6, and computing respectively 5, 14 and 60 features, followed by a fully-connected layer that computes 40 features. Convolutions 1 and 2 are also followed by 2x2 max-pooling layers.</p>
@@ -110,7 +110,7 @@ d({x_1}, {x_2}) = ||{W}{x_1}-{W}{x_2}||
 <p>DeepID implements a CNN with four convolutional layers, of kernel sizes 4x4, 3x3, 2x2 and 2x2 and computing 20, 40, 60 and 80 features respectively. The first three layers are followed by 2x2 max-pooling, and both convolution 3 and 4 output to a fully-connected layer (named after the algorithm itself) that computes 160 features and will be used for the verification task later. Finally, for the identification task, the final layer is a softmax for classification between all the identities in the dataset.</p>
 <figure>
   <img src = "https://raw.githubusercontent.com/Joaoloula/sparse-face-verification/master/images/deepid.jpg" align='middle'/>
-  <figcaption> Visualization of the DeepID architecture. </figcaption>
+  <figcaption><sup> Visualization of the DeepID architecture (source: <a href='#deepid' id='ref-deepid-2'>(Sun et al., 2014)</a>). </sup></figcaption>
 </figure>
 
 <p>After training on the identification task, we can remove the softmax layer and use the fully-connected DeepID layer as a descriptor for an algorithm that will perform verification on a 160-dimensional space. In Sun's paper, the method found to have the best results was the joint-bayesian model.</p>
@@ -186,7 +186,7 @@ Bayesian face revisited: a joint formulation.
 In <em>Proc. ECCV</em>. 2012. <a class="cite-backref" href="#ref-joint-bayesian-1" title="Jump back to reference 1">↩</a></p>
 <p id='siamese-cnns'>S.&nbsp;Chopra, R.&nbsp;Hadsell, and Y.&nbsp;LeCun.
 Learning a similarity metric discriminatively, with application to face verification.
-In <em>Proc. CVPR</em>. 2005. <a class="cite-backref" href="#ref-siamese-cnns-1" title="Jump back to reference 1">↩</a></p>
+In <em>Proc. CVPR</em>. 2005. <a class="cite-backref" href="#ref-siamese-cnns-1" title="Jump back to reference 1">↩</a><a class="cite-backref" href="#ref-siamese-cnns-1" title="Jump back to reference 1"> <sup>1</sup> </a><a class="cite-backref" href="#ref-siamese-cnns-2" title="Jump back to reference 2"><sup>2</sup> </a></p>
 <p id='hog'>N.&nbsp;Dallal and B.&nbsp;Trigs.
 Histograms of oriented gradients for human detection.
 In <em>Proc. ICCV</em>. 2005. <a class="cite-backref" href="#ref-hog-1" title="Jump back to reference 1">↩</a></p>
@@ -196,12 +196,15 @@ In <em>Proc. RVSP</em>. 2013. <a class="cite-backref" href="#ref-mahalanobis-1" 
 <p id='ddml'>J.&nbsp;Hu, J.&nbsp;Lu, and Y.-P. Tan.
 Discriminative deep metric learning for face verification in the wild.
 In <em>Proc. CVPR</em>. 2014. <a class="cite-backref" href="#ref-ddml-1" title="Jump back to reference 1">↩</a></p>
+<p id='title-image'>M.&nbsp;Köstinger, M.&nbsp;Hirzer, P.&nbsp;Wohlhart, and H.&nbsp;Bischof.
+Large scale metric learning from equivalence constraints.
+In <em>Proc. CVPR</em>. 2012. <a class="cite-backref" href="#ref-title-image-1" title="Jump back to reference 1">↩</a></p>
 <p id='exemplar-svm'>T.&nbsp;Malisiewicz, A.&nbsp;Gupta, and A.&nbsp;A. Efros.
 Ensemble of exemplar-svms for object detection and beyond.
-In <em>Proc. ICCV</em>. 2011. <a class="cite-backref" href="#ref-exemplar-svm-1" title="Jump back to reference 1">↩</a></p>
+In <em>Proc. ICCV</em>. 2011. <a class="cite-backref" href="#ref-exemplar-svm-1" title="Jump back to reference 1">↩</a><a class="cite-backref" href="#ref-exemplar-svm-1" title="Jump back to reference 1"> <sup>1</sup> </a><a class="cite-backref" href="#ref-exemplar-svm-2" title="Jump back to reference 2"><sup>2</sup> </a></p>
 <p id='deepid'>Y.&nbsp;Sun, W.&nbsp;Xiaogang, and T.&nbsp;Xiaoou.
 Deep learning face representation from predicting 10,000 classes.
-In <em>Proc. CVPR</em>. 2014. <a class="cite-backref" href="#ref-deepid-1" title="Jump back to reference 1">↩</a></p>
+In <em>Proc. CVPR</em>. 2014. <a class="cite-backref" href="#ref-deepid-1" title="Jump back to reference 1">↩</a><a class="cite-backref" href="#ref-deepid-1" title="Jump back to reference 1"> <sup>1</sup> </a><a class="cite-backref" href="#ref-deepid-2" title="Jump back to reference 2"><sup>2</sup> </a></p>
 
             <a href="#" class="go-top">Go Top</a>
     <div class="comments">
