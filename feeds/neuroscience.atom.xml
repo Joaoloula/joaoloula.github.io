@@ -4,7 +4,7 @@
 &lt;p&gt;Nilearn is a python module for statistical and machine learning analysis on brain data: it leverages python's simplicity and versatility into an easy-to-use integrated pipeline. Having analysis run on single, simple scripts allows for better reproducibility than, say, clicking on things in a GUI.&lt;/p&gt;
 &lt;p&gt;This is how a typical Nilearn analysis goes:&lt;/p&gt;
 &lt;figure&gt;
-    &lt;img src="https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/DMN.jpg" alt='missing' align='middle' /&gt;
+    &lt;img src="https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/nilearn_candy.png" alt='missing' align='middle' /&gt;
     &lt;figcaption&gt; &lt;sup&gt;source: &lt;a href='#nilearn-poster' id='ref-nilearn-poster-1'&gt;(Abraham et al., 2016)&lt;/a&gt;&lt;/sup&gt;
 &lt;/figure&gt;
 
