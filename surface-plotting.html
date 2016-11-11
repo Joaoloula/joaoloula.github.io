@@ -64,7 +64,8 @@
                         </p>
                 </header>
             </section>
-            <p>We start by importing the libraries we're gonna need:</p>
+            <p>In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg (you can take a look at the PR's progress <a href="https://github.com/nilearn/nilearn/pull/1016">here</a>) with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.</p>
+<p>We start by importing the libraries we're gonna need:</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
 <span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
@@ -74,7 +75,7 @@
 </pre></div>
 
 
-<p>In this example we'll use the Rockland NKI enhanced resting state dataset <a href='#nki' id='ref-nki-1'>(B et al., 2012)</a>, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.</p>
+<p>In this example we'll use the Rockland NKI enhanced resting state dataset <a href='#nki' id='ref-nki-1'>(Nooner et al., 2012)</a>, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Retrieve the data</span>
 <span class="n">nki_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">fetch_surf_nki_enhanced</span><span class="p">(</span><span class="n">n_subjects</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
@@ -90,7 +91,7 @@
 </pre></div>
 
 
-<p>The Destrieux parcellation is based on the Fsaverage5 <a href='#fsaverage5' id='ref-fsaverage5-1'>(B et al., 2004)</a> surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.</p>
+<p>The Destrieux parcellation is based on the Fsaverage5 <a href='#fsaverage5' id='ref-fsaverage5-1'>(Fischl et al., 2004)</a> surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Retrieve fsaverage data</span>
 <span class="n">fsaverage</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">fetch_surf_fsaverage5</span><span class="p">()</span>
 
@@ -101,7 +102,7 @@
 </pre></div>
 
 
-<p>Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by $ \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y } $.</p>
+<p>Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by <span class="math">\( \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y }\)</span>.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Load resting state time series and parcellation</span>
 <span class="n">timeseries</span> <span class="o">=</span> <span class="n">plotting</span><span class="o">.</span><span class="n">surf_plotting</span><span class="o">.</span><span class="n">check_surf_data</span><span class="p">(</span><span class="n">resting_state</span><span class="p">)</span>
 
@@ -168,17 +169,75 @@
 
 <p align="center">
   <img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/alpha.png"/>
-</p><hr>
+</p>
+
+<script type="text/javascript">if (!document.getElementById('mathjaxscript_pelican_#%&#64;#$&#64;#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width < 768) ? "left" : align;
+        indent = (screen.width < 768) ? "0em" : indent;
+        linebreak = (screen.width < 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' && location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%&#64;#$&#64;#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' }, Macros: {} }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+</script><hr>
 <h2>Bibliography</h2>
-<p id='fsaverage5'>Fischl B., van&nbsp;der Kouwe&nbsp;A., Destrieux C., Halgren E., Ségonne F., Salat&nbsp;D. H., Busa E., Seidman&nbsp;L. J., Goldstein J., Kennedy D., Caviness V., Makris N., Rosen B., and Dale&nbsp;A. M.
-Automatically parcellating the human cerebral cortex.
-<em>Cerebral Cortex</em>, 2004. <a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1">↩</a></p>
-<p id='nki'>Nooner&nbsp;K. B., Colcombe&nbsp;S. J., Tobe&nbsp;R. H., Mennes M., Benedict&nbsp;M. M., Moreno&nbsp;A. L., Panek L. J.&nbsp;Brown S., Zavitz&nbsp;S. T., Li&nbsp;Q., Sikka S,, Gutman D., Bangaru S., Schlachter&nbsp;R. T., Kamiel&nbsp;S. M., Anwar&nbsp;A. R, Hinz&nbsp;C. M., Kaplan&nbsp;M. S., Rachlin&nbsp;A. B., Adelsberg S., Cheung B., Khanuja R., Yan C., Craddock&nbsp;C. C., Calhoun V., Courtney W., King M., Wood D., Cox&nbsp;C. L., Kelly A. M. Di&nbsp;Martino A., Petkova E., Reiss&nbsp;P. T., Duan N., Thomsen D., Biswal B., Coffey B., Hoptman&nbsp;M. J., Javitt&nbsp;D. C., Pomara N., Sidtis&nbsp;J. J., Koplewicz&nbsp;H. S., Castellanos&nbsp;F. X., Leventhal&nbsp;B. L., and Milham&nbsp;M. P.
-The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
-<em>Frontiers in Neuroscience</em>, 2012. <a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1">↩</a></p>
 <p id='destrieux'>C.&nbsp;Destrieux, Fischl B., Dale&nbsp;A. M., and Halgren A.
 A sulcal depth-based anatomical parcellation of the cerebral cortex.
 <em>Neuroimage</em>, 2009. <a class="cite-backref" href="#ref-destrieux-1" title="Jump back to reference 1">↩</a></p>
+<p id='fsaverage5'>B.&nbsp;Fischl, A.&nbsp;van&nbsp;der Kouwe, C.&nbsp;Destrieux, E.&nbsp;Halgren, F.&nbsp;Ségonne, D.&nbsp;H. Salat, E.&nbsp;Busa, L.&nbsp;J. Seidman, J.&nbsp;Goldstein, D.&nbsp;Kennedy, V.&nbsp;Caviness, N.&nbsp;Makris, B.&nbsp;Rosen, and A.&nbsp;M. Dale.
+Automatically parcellating the human cerebral cortex.
+<em>Cerebral Cortex</em>, 2004. <a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1">↩</a></p>
+<p id='nki'>K.&nbsp;B. Nooner, S.&nbsp;J. Colcombe, R.&nbsp;H. Tobe, M.&nbsp;Mennes, M.&nbsp;M. Benedict, A.&nbsp;L. Moreno, S.&nbsp;Panek, L.&nbsp;J.&nbsp;Brown, S.&nbsp;T. Zavitz, Q.&nbsp;Li, S.&nbsp;Sikka, D.&nbsp;Gutman, S.&nbsp;Bangaru, R.&nbsp;T. Schlachter, S.&nbsp;M. Kamiel, A.&nbsp;R Anwar, C.&nbsp;M. Hinz, M.&nbsp;S. Kaplan, A.&nbsp;B. Rachlin, S.&nbsp;Adelsberg, B.&nbsp;Cheung, R.&nbsp;Khanuja, C.&nbsp;Yan, C.&nbsp;C. Craddock, V.&nbsp;Calhoun, W.&nbsp;Courtney, M.&nbsp;King, D.&nbsp;Wood, C.&nbsp;L. Cox, A.&nbsp;M. Kelly, A.&nbsp;Di&nbsp;Martino, E.&nbsp;Petkova, P.&nbsp;T. Reiss, N.&nbsp;Duan, D.&nbsp;Thomsen, B.&nbsp;Biswal, B.&nbsp;Coffey, M.&nbsp;J. Hoptman, D.&nbsp;C. Javitt, N.&nbsp;Pomara, J.&nbsp;J. Sidtis, H.&nbsp;S. Koplewicz, F.&nbsp;X. Castellanos, B.&nbsp;L. Leventhal, and M.&nbsp;P. Milham.
+The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
+<em>Frontiers in Neuroscience</em>, 2012. <a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1">↩</a></p>
 
             <a href="#" class="go-top">Go Top</a>
     <div class="comments">

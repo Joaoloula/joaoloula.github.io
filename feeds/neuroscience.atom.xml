@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<feed xmlns="http://www.w3.org/2005/Atom"><title>João Loula's Blog</title><link href="/" rel="alternate"></link><link href="/feeds/neuroscience.atom.xml" rel="self"></link><id>/</id><updated>2016-04-02T14:54:00+02:00</updated><entry><title>Functional brain atlas with Nilearn</title><link href="/functional-atlas.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:functional-atlas.html</id><summary type="html">&lt;p&gt;This post is based on the Nilearn tutorial given by myself and Alex Abraham at the 2016 Brainhack Vienna: in it, we'll give a brief introduction to Nilearn and its functionalities, and we'll present a usecase of extracting a functional brain atlas from the ABIDE resting state dataset.&lt;/p&gt;
+<feed xmlns="http://www.w3.org/2005/Atom"><title>João Loula's Blog</title><link href="/" rel="alternate"></link><link href="/feeds/neuroscience.atom.xml" rel="self"></link><id>/</id><updated>2016-04-02T14:54:00+02:00</updated><entry><title>Functional brain atlas with Nilearn</title><link href="/functional-atlas.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:functional-atlas.html</id><summary type="html">&lt;p&gt;This post is based on the Nilearn tutorial given by myself and Alex Abraham at the 2016 Brainhack Vienna: in it, we'll give a brief introduction to Nilearn and its functionalities, and we'll present a usecase of extracting a functional brain atlas from the ABIDE resting state dataset. The presentation slides along with the tutorial notebook can be found &lt;a href="https://github.com/Joaoloula/nilearn-tutorial-brainhack-2016-vienna"&gt;here&lt;/a&gt;.&lt;/p&gt;
 &lt;h2&gt;Nilearn&lt;/h2&gt;
 &lt;p&gt;Nilearn is a python module for statistical and machine learning analysis on brain data: it leverages python's simplicity and versatility into an easy-to-use integrated pipeline. Having analysis run on single, simple scripts allows for better reproducibility than, say, clicking on things in a GUI.&lt;/p&gt;
 &lt;p&gt;This is how a typical Nilearn analysis goes:&lt;/p&gt;
@@ -242,7 +242,8 @@ Nilearn: machine learning for neuro-imaging in python.
 &lt;p id='abide'&gt;A.&amp;nbsp;Di&amp;nbsp;Martino, C.&amp;nbsp;G. Yan, Q.&amp;nbsp;Li, E.&amp;nbsp;Denio, F.&amp;nbsp;X. Castellanos, K.&amp;nbsp;Alaerts, J.&amp;nbsp;S. Anderson, M.&amp;nbsp;Assaf, S.&amp;nbsp;Y. Bookheimer, M.&amp;nbsp;Dapretto, B.&amp;nbsp;Deen, S.&amp;nbsp;Delmonte, I.&amp;nbsp;Dinstein, B.&amp;nbsp;Ertl-Wagner, D.&amp;nbsp;A. Fair, L.&amp;nbsp;Gallagher, D.&amp;nbsp;P. Kennedy, C.&amp;nbsp;L. Keown, C.&amp;nbsp;Keysers, J.&amp;nbsp;E. Lainhart, C.&amp;nbsp;Lord, B.&amp;nbsp;Luna, V.&amp;nbsp;Menon, N.&amp;nbsp;J. Minshew, C.&amp;nbsp;S. Monk, S.&amp;nbsp;Mueller, R.&amp;nbsp;A. Müller, M.&amp;nbsp;B. Nebel, J.&amp;nbsp;T. Nigg, K.&amp;nbsp;O'Hearn, K.&amp;nbsp;A. Pelphrey, S.&amp;nbsp;J. Peltier, J.&amp;nbsp;D. Rudie, S.&amp;nbsp;Sunaert, M.&amp;nbsp;Thioux, J.&amp;nbsp;M. Tyszka, L.&amp;nbsp;Q. Uddin, J.&amp;nbsp;S. Verhoeven, N.&amp;nbsp;Wenderoth, J.&amp;nbsp;L. Wiggins, S.&amp;nbsp;H. Mostofsky, and M.&amp;nbsp;P. Milham.
 The autism brain imaging data exchange: towards a large-scale evaluation of the intrinsic brain architecture in autism.
 &lt;em&gt;Mol Psychiatry&lt;/em&gt;, 2014. &lt;a class="cite-backref" href="#ref-abide-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
-</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;p&gt;We start by importing the libraries we're gonna need:&lt;/p&gt;
+</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;p&gt;In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg (you can take a look at the PR's progress &lt;a href="https://github.com/nilearn/nilearn/pull/1016"&gt;here&lt;/a&gt;) with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.&lt;/p&gt;
+&lt;p&gt;We start by importing the libraries we're gonna need:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;stats&lt;/span&gt;
@@ -252,7 +253,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;In this example we'll use the Rockland NKI enhanced resting state dataset &lt;a href='#nki' id='ref-nki-1'&gt;(B et al., 2012)&lt;/a&gt;, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.&lt;/p&gt;
+&lt;p&gt;In this example we'll use the Rockland NKI enhanced resting state dataset &lt;a href='#nki' id='ref-nki-1'&gt;(Nooner et al., 2012)&lt;/a&gt;, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Retrieve the data&lt;/span&gt;
 &lt;span class="n"&gt;nki_dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fetch_surf_nki_enhanced&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n_subjects&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
@@ -268,7 +269,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;The Destrieux parcellation is based on the Fsaverage5 &lt;a href='#fsaverage5' id='ref-fsaverage5-1'&gt;(B et al., 2004)&lt;/a&gt; surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.&lt;/p&gt;
+&lt;p&gt;The Destrieux parcellation is based on the Fsaverage5 &lt;a href='#fsaverage5' id='ref-fsaverage5-1'&gt;(Fischl et al., 2004)&lt;/a&gt; surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Retrieve fsaverage data&lt;/span&gt;
 &lt;span class="n"&gt;fsaverage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fetch_surf_fsaverage5&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
@@ -279,7 +280,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
-&lt;p&gt;Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by $ \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y } $.&lt;/p&gt;
+&lt;p&gt;Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by &lt;span class="math"&gt;\( \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y }\)&lt;/span&gt;.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Load resting state time series and parcellation&lt;/span&gt;
 &lt;span class="n"&gt;timeseries&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;surf_plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;check_surf_data&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resting_state&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
@@ -346,15 +347,73 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 
 &lt;p align="center"&gt;
   &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/alpha.png"/&gt;
-&lt;/p&gt;&lt;hr&gt;
+&lt;/p&gt;
+
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%&amp;#64;#$&amp;#64;#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%&amp;#64;#$&amp;#64;#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' }, Macros: {} }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;&lt;hr&gt;
 &lt;h2&gt;Bibliography&lt;/h2&gt;
-&lt;p id='fsaverage5'&gt;Fischl B., van&amp;nbsp;der Kouwe&amp;nbsp;A., Destrieux C., Halgren E., Ségonne F., Salat&amp;nbsp;D. H., Busa E., Seidman&amp;nbsp;L. J., Goldstein J., Kennedy D., Caviness V., Makris N., Rosen B., and Dale&amp;nbsp;A. M.
-Automatically parcellating the human cerebral cortex.
-&lt;em&gt;Cerebral Cortex&lt;/em&gt;, 2004. &lt;a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
-&lt;p id='nki'&gt;Nooner&amp;nbsp;K. B., Colcombe&amp;nbsp;S. J., Tobe&amp;nbsp;R. H., Mennes M., Benedict&amp;nbsp;M. M., Moreno&amp;nbsp;A. L., Panek L. J.&amp;nbsp;Brown S., Zavitz&amp;nbsp;S. T., Li&amp;nbsp;Q., Sikka S,, Gutman D., Bangaru S., Schlachter&amp;nbsp;R. T., Kamiel&amp;nbsp;S. M., Anwar&amp;nbsp;A. R, Hinz&amp;nbsp;C. M., Kaplan&amp;nbsp;M. S., Rachlin&amp;nbsp;A. B., Adelsberg S., Cheung B., Khanuja R., Yan C., Craddock&amp;nbsp;C. C., Calhoun V., Courtney W., King M., Wood D., Cox&amp;nbsp;C. L., Kelly A. M. Di&amp;nbsp;Martino A., Petkova E., Reiss&amp;nbsp;P. T., Duan N., Thomsen D., Biswal B., Coffey B., Hoptman&amp;nbsp;M. J., Javitt&amp;nbsp;D. C., Pomara N., Sidtis&amp;nbsp;J. J., Koplewicz&amp;nbsp;H. S., Castellanos&amp;nbsp;F. X., Leventhal&amp;nbsp;B. L., and Milham&amp;nbsp;M. P.
-The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
-&lt;em&gt;Frontiers in Neuroscience&lt;/em&gt;, 2012. &lt;a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
 &lt;p id='destrieux'&gt;C.&amp;nbsp;Destrieux, Fischl B., Dale&amp;nbsp;A. M., and Halgren A.
 A sulcal depth-based anatomical parcellation of the cerebral cortex.
 &lt;em&gt;Neuroimage&lt;/em&gt;, 2009. &lt;a class="cite-backref" href="#ref-destrieux-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='fsaverage5'&gt;B.&amp;nbsp;Fischl, A.&amp;nbsp;van&amp;nbsp;der Kouwe, C.&amp;nbsp;Destrieux, E.&amp;nbsp;Halgren, F.&amp;nbsp;Ségonne, D.&amp;nbsp;H. Salat, E.&amp;nbsp;Busa, L.&amp;nbsp;J. Seidman, J.&amp;nbsp;Goldstein, D.&amp;nbsp;Kennedy, V.&amp;nbsp;Caviness, N.&amp;nbsp;Makris, B.&amp;nbsp;Rosen, and A.&amp;nbsp;M. Dale.
+Automatically parcellating the human cerebral cortex.
+&lt;em&gt;Cerebral Cortex&lt;/em&gt;, 2004. &lt;a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='nki'&gt;K.&amp;nbsp;B. Nooner, S.&amp;nbsp;J. Colcombe, R.&amp;nbsp;H. Tobe, M.&amp;nbsp;Mennes, M.&amp;nbsp;M. Benedict, A.&amp;nbsp;L. Moreno, S.&amp;nbsp;Panek, L.&amp;nbsp;J.&amp;nbsp;Brown, S.&amp;nbsp;T. Zavitz, Q.&amp;nbsp;Li, S.&amp;nbsp;Sikka, D.&amp;nbsp;Gutman, S.&amp;nbsp;Bangaru, R.&amp;nbsp;T. Schlachter, S.&amp;nbsp;M. Kamiel, A.&amp;nbsp;R Anwar, C.&amp;nbsp;M. Hinz, M.&amp;nbsp;S. Kaplan, A.&amp;nbsp;B. Rachlin, S.&amp;nbsp;Adelsberg, B.&amp;nbsp;Cheung, R.&amp;nbsp;Khanuja, C.&amp;nbsp;Yan, C.&amp;nbsp;C. Craddock, V.&amp;nbsp;Calhoun, W.&amp;nbsp;Courtney, M.&amp;nbsp;King, D.&amp;nbsp;Wood, C.&amp;nbsp;L. Cox, A.&amp;nbsp;M. Kelly, A.&amp;nbsp;Di&amp;nbsp;Martino, E.&amp;nbsp;Petkova, P.&amp;nbsp;T. Reiss, N.&amp;nbsp;Duan, D.&amp;nbsp;Thomsen, B.&amp;nbsp;Biswal, B.&amp;nbsp;Coffey, M.&amp;nbsp;J. Hoptman, D.&amp;nbsp;C. Javitt, N.&amp;nbsp;Pomara, J.&amp;nbsp;J. Sidtis, H.&amp;nbsp;S. Koplewicz, F.&amp;nbsp;X. Castellanos, B.&amp;nbsp;L. Leventhal, and M.&amp;nbsp;P. Milham.
+The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
+&lt;em&gt;Frontiers in Neuroscience&lt;/em&gt;, 2012. &lt;a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
 </summary><category term="surface plot"></category><category term="atlas"></category><category term="statistical map"></category></entry></feed>
