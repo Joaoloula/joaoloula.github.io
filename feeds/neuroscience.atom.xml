@@ -242,7 +242,8 @@ Nilearn: machine learning for neuro-imaging in python.
 &lt;p id='abide'&gt;A.&amp;nbsp;Di&amp;nbsp;Martino, C.&amp;nbsp;G. Yan, Q.&amp;nbsp;Li, E.&amp;nbsp;Denio, F.&amp;nbsp;X. Castellanos, K.&amp;nbsp;Alaerts, J.&amp;nbsp;S. Anderson, M.&amp;nbsp;Assaf, S.&amp;nbsp;Y. Bookheimer, M.&amp;nbsp;Dapretto, B.&amp;nbsp;Deen, S.&amp;nbsp;Delmonte, I.&amp;nbsp;Dinstein, B.&amp;nbsp;Ertl-Wagner, D.&amp;nbsp;A. Fair, L.&amp;nbsp;Gallagher, D.&amp;nbsp;P. Kennedy, C.&amp;nbsp;L. Keown, C.&amp;nbsp;Keysers, J.&amp;nbsp;E. Lainhart, C.&amp;nbsp;Lord, B.&amp;nbsp;Luna, V.&amp;nbsp;Menon, N.&amp;nbsp;J. Minshew, C.&amp;nbsp;S. Monk, S.&amp;nbsp;Mueller, R.&amp;nbsp;A. Müller, M.&amp;nbsp;B. Nebel, J.&amp;nbsp;T. Nigg, K.&amp;nbsp;O'Hearn, K.&amp;nbsp;A. Pelphrey, S.&amp;nbsp;J. Peltier, J.&amp;nbsp;D. Rudie, S.&amp;nbsp;Sunaert, M.&amp;nbsp;Thioux, J.&amp;nbsp;M. Tyszka, L.&amp;nbsp;Q. Uddin, J.&amp;nbsp;S. Verhoeven, N.&amp;nbsp;Wenderoth, J.&amp;nbsp;L. Wiggins, S.&amp;nbsp;H. Mostofsky, and M.&amp;nbsp;P. Milham.
 The autism brain imaging data exchange: towards a large-scale evaluation of the intrinsic brain architecture in autism.
 &lt;em&gt;Mol Psychiatry&lt;/em&gt;, 2014. &lt;a class="cite-backref" href="#ref-abide-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
-</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;
+</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;p&gt;We start by importing the libraries we're gonna need:&lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;scipy&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;stats&lt;/span&gt;
 &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="nn"&gt;nibabel&lt;/span&gt; &lt;span class="kn"&gt;as&lt;/span&gt; &lt;span class="nn"&gt;nb&lt;/span&gt;
@@ -251,20 +252,23 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p&gt;In this example we'll use the Rockland NKI enhanced resting state dataset &lt;a href='#nki' id='ref-nki-1'&gt;(B et al., 2012)&lt;/a&gt;, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Retrieve the data&lt;/span&gt;
 &lt;span class="n"&gt;nki_dataset&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fetch_surf_nki_enhanced&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;n_subjects&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="mi"&gt;1&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="c1"&gt;# NKI resting state data set of one subject left hemisphere in fsaverage5 space&lt;/span&gt;
 &lt;span class="n"&gt;resting_state&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;nki_dataset&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;func_left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;][&lt;/span&gt;&lt;span class="mi"&gt;0&lt;/span&gt;&lt;span class="p"&gt;]&lt;/span&gt;
-&lt;span class="sb"&gt;``&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
+&lt;/pre&gt;&lt;/div&gt;
 
-&lt;span class="sb"&gt;``&lt;/span&gt;&lt;span class="err"&gt;`&lt;/span&gt;&lt;span class="n"&gt;python&lt;/span&gt;
-&lt;span class="c1"&gt;# Destrieux parcellation left hemisphere in fsaverage5 space&lt;/span&gt;
+
+&lt;p&gt;We'll want to define regions of interest for our analysis: for this, we'll need a brain parcellation. For this purpose, we'll use the sulcal-depth based Destrieux cortical atlas &lt;a href='#destrieux' id='ref-destrieux-1'&gt;(Destrieux et al., 2009)&lt;/a&gt;: &lt;/p&gt;
+&lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Destrieux parcellation left hemisphere in fsaverage5 space&lt;/span&gt;
 &lt;span class="n"&gt;destrieux_atlas&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fetch_atlas_surf_destrieux&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 &lt;span class="n"&gt;parcellation&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;nb&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;freesurfer&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;read_annot&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;destrieux_atlas&lt;/span&gt;&lt;span class="p"&gt;[&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;annot_left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;])&lt;/span&gt;
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p&gt;The Destrieux parcellation is based on the Fsaverage5 &lt;a href='#fsaverage5' id='ref-fsaverage5-1'&gt;(B et al., 2004)&lt;/a&gt; surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Retrieve fsaverage data&lt;/span&gt;
 &lt;span class="n"&gt;fsaverage&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;fetch_surf_fsaverage5&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
 
@@ -275,6 +279,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p&gt;Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by $ \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y } $.&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Load resting state time series and parcellation&lt;/span&gt;
 &lt;span class="n"&gt;timeseries&lt;/span&gt; &lt;span class="o"&gt;=&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;surf_plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;check_surf_data&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;resting_state&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
@@ -296,6 +301,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p&gt;Now for the actual plotting: we start by plotting the seed:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Display ROI on surface&lt;/span&gt;
 &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot_surf_roi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fsaverage5_pial&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;roi_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;labels&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hemi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                        &lt;span class="n"&gt;view&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;medial&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bg_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;sulcal_depth_map&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bg_on_data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
@@ -303,6 +309,11 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/roi.png"/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Next, we'll plot the correlation statistical map in both the lateral and medial views:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Display unthresholded stat map in lateral and medial view&lt;/span&gt;
 &lt;span class="c1"&gt;# dimmed background&lt;/span&gt;
 &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot_surf_stat_map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fsaverage5_pial&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stat_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;stat_map&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hemi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
@@ -315,10 +326,35 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/lateral.png"/&gt;
+&lt;/p&gt;
+
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/medial.png"/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;Finally, to show off Nilearn's plotting capabilities, we'll play a little with colormaps and transparency:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Displaying a thresholded stat map with a different colormap and transparency&lt;/span&gt;
 &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot_surf_stat_map&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fsaverage5_pial&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;stat_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;stat_map&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hemi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                             &lt;span class="n"&gt;bg_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;sulcal_depth_map&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;bg_on_data&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="bp"&gt;True&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;
                             &lt;span class="n"&gt;cmap&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;Spectral&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;threshold&lt;/span&gt;&lt;span class="o"&gt;=.&lt;/span&gt;&lt;span class="mi"&gt;6&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;alpha&lt;/span&gt;&lt;span class="o"&gt;=.&lt;/span&gt;&lt;span class="mi"&gt;5&lt;/span&gt;&lt;span class="p"&gt;)&lt;/span&gt;
 
 &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;show&lt;/span&gt;&lt;span class="p"&gt;()&lt;/span&gt;
-&lt;/pre&gt;&lt;/div&gt;</summary><category term="surface plot"></category><category term="atlas"></category><category term="statistical map"></category></entry></feed>
+&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/alpha.png"/&gt;
+&lt;/p&gt;&lt;hr&gt;
+&lt;h2&gt;Bibliography&lt;/h2&gt;
+&lt;p id='fsaverage5'&gt;Fischl B., van&amp;nbsp;der Kouwe&amp;nbsp;A., Destrieux C., Halgren E., Ségonne F., Salat&amp;nbsp;D. H., Busa E., Seidman&amp;nbsp;L. J., Goldstein J., Kennedy D., Caviness V., Makris N., Rosen B., and Dale&amp;nbsp;A. M.
+Automatically parcellating the human cerebral cortex.
+&lt;em&gt;Cerebral Cortex&lt;/em&gt;, 2004. &lt;a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='nki'&gt;Nooner&amp;nbsp;K. B., Colcombe&amp;nbsp;S. J., Tobe&amp;nbsp;R. H., Mennes M., Benedict&amp;nbsp;M. M., Moreno&amp;nbsp;A. L., Panek L. J.&amp;nbsp;Brown S., Zavitz&amp;nbsp;S. T., Li&amp;nbsp;Q., Sikka S,, Gutman D., Bangaru S., Schlachter&amp;nbsp;R. T., Kamiel&amp;nbsp;S. M., Anwar&amp;nbsp;A. R, Hinz&amp;nbsp;C. M., Kaplan&amp;nbsp;M. S., Rachlin&amp;nbsp;A. B., Adelsberg S., Cheung B., Khanuja R., Yan C., Craddock&amp;nbsp;C. C., Calhoun V., Courtney W., King M., Wood D., Cox&amp;nbsp;C. L., Kelly A. M. Di&amp;nbsp;Martino A., Petkova E., Reiss&amp;nbsp;P. T., Duan N., Thomsen D., Biswal B., Coffey B., Hoptman&amp;nbsp;M. J., Javitt&amp;nbsp;D. C., Pomara N., Sidtis&amp;nbsp;J. J., Koplewicz&amp;nbsp;H. S., Castellanos&amp;nbsp;F. X., Leventhal&amp;nbsp;B. L., and Milham&amp;nbsp;M. P.
+The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
+&lt;em&gt;Frontiers in Neuroscience&lt;/em&gt;, 2012. &lt;a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='destrieux'&gt;C.&amp;nbsp;Destrieux, Fischl B., Dale&amp;nbsp;A. M., and Halgren A.
+A sulcal depth-based anatomical parcellation of the cerebral cortex.
+&lt;em&gt;Neuroimage&lt;/em&gt;, 2009. &lt;a class="cite-backref" href="#ref-destrieux-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+</summary><category term="surface plot"></category><category term="atlas"></category><category term="statistical map"></category></entry></feed>

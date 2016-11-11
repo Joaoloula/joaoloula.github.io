@@ -64,7 +64,8 @@
                         </p>
                 </header>
             </section>
-            <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
+            <p>We start by importing the libraries we're gonna need:</p>
+<div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
 <span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">datasets</span>
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="kn">import</span> <span class="n">stats</span>
 <span class="kn">import</span> <span class="nn">nibabel</span> <span class="kn">as</span> <span class="nn">nb</span>
@@ -73,20 +74,23 @@
 </pre></div>
 
 
+<p>In this example we'll use the Rockland NKI enhanced resting state dataset <a href='#nki' id='ref-nki-1'>(B et al., 2012)</a>, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Retrieve the data</span>
 <span class="n">nki_dataset</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">fetch_surf_nki_enhanced</span><span class="p">(</span><span class="n">n_subjects</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 
 <span class="c1"># NKI resting state data set of one subject left hemisphere in fsaverage5 space</span>
 <span class="n">resting_state</span> <span class="o">=</span> <span class="n">nki_dataset</span><span class="p">[</span><span class="s1">&#39;func_left&#39;</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
-<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
+</pre></div>
 
-<span class="sb">``</span><span class="err">`</span><span class="n">python</span>
-<span class="c1"># Destrieux parcellation left hemisphere in fsaverage5 space</span>
+
+<p>We'll want to define regions of interest for our analysis: for this, we'll need a brain parcellation. For this purpose, we'll use the sulcal-depth based Destrieux cortical atlas <a href='#destrieux' id='ref-destrieux-1'>(Destrieux et al., 2009)</a>: </p>
+<div class="highlight"><pre><span></span><span class="c1"># Destrieux parcellation left hemisphere in fsaverage5 space</span>
 <span class="n">destrieux_atlas</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">fetch_atlas_surf_destrieux</span><span class="p">()</span>
 <span class="n">parcellation</span> <span class="o">=</span> <span class="n">nb</span><span class="o">.</span><span class="n">freesurfer</span><span class="o">.</span><span class="n">read_annot</span><span class="p">(</span><span class="n">destrieux_atlas</span><span class="p">[</span><span class="s1">&#39;annot_left&#39;</span><span class="p">])</span>
 </pre></div>
 
 
+<p>The Destrieux parcellation is based on the Fsaverage5 <a href='#fsaverage5' id='ref-fsaverage5-1'>(B et al., 2004)</a> surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Retrieve fsaverage data</span>
 <span class="n">fsaverage</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">fetch_surf_fsaverage5</span><span class="p">()</span>
 
@@ -97,6 +101,7 @@
 </pre></div>
 
 
+<p>Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by $ \rho_{X, Y} \frac{\text{cov}\left( X, Y \right)}{ \sigma_X \sigma_Y } $.</p>
 <div class="highlight"><pre><span></span><span class="c1"># Load resting state time series and parcellation</span>
 <span class="n">timeseries</span> <span class="o">=</span> <span class="n">plotting</span><span class="o">.</span><span class="n">surf_plotting</span><span class="o">.</span><span class="n">check_surf_data</span><span class="p">(</span><span class="n">resting_state</span><span class="p">)</span>
 
@@ -118,6 +123,7 @@
 </pre></div>
 
 
+<p>Now for the actual plotting: we start by plotting the seed:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Display ROI on surface</span>
 <span class="n">plotting</span><span class="o">.</span><span class="n">plot_surf_roi</span><span class="p">(</span><span class="n">fsaverage5_pial</span><span class="p">,</span> <span class="n">roi_map</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
                        <span class="n">view</span><span class="o">=</span><span class="s1">&#39;medial&#39;</span><span class="p">,</span> <span class="n">bg_map</span><span class="o">=</span><span class="n">sulcal_depth_map</span><span class="p">,</span> <span class="n">bg_on_data</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
@@ -125,6 +131,11 @@
 </pre></div>
 
 
+<p align="center">
+  <img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/roi.png"/>
+</p>
+
+<p>Next, we'll plot the correlation statistical map in both the lateral and medial views:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Display unthresholded stat map in lateral and medial view</span>
 <span class="c1"># dimmed background</span>
 <span class="n">plotting</span><span class="o">.</span><span class="n">plot_surf_stat_map</span><span class="p">(</span><span class="n">fsaverage5_pial</span><span class="p">,</span> <span class="n">stat_map</span><span class="o">=</span><span class="n">stat_map</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
@@ -137,6 +148,15 @@
 </pre></div>
 
 
+<p align="center">
+  <img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/lateral.png"/>
+</p>
+
+<p align="center">
+  <img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/medial.png"/>
+</p>
+
+<p>Finally, to show off Nilearn's plotting capabilities, we'll play a little with colormaps and transparency:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Displaying a thresholded stat map with a different colormap and transparency</span>
 <span class="n">plotting</span><span class="o">.</span><span class="n">plot_surf_stat_map</span><span class="p">(</span><span class="n">fsaverage5_pial</span><span class="p">,</span> <span class="n">stat_map</span><span class="o">=</span><span class="n">stat_map</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
                             <span class="n">bg_map</span><span class="o">=</span><span class="n">sulcal_depth_map</span><span class="p">,</span> <span class="n">bg_on_data</span><span class="o">=</span><span class="bp">True</span><span class="p">,</span>
@@ -144,6 +164,22 @@
 
 <span class="n">plotting</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 </pre></div>
+
+
+<p align="center">
+  <img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/alpha.png"/>
+</p><hr>
+<h2>Bibliography</h2>
+<p id='fsaverage5'>Fischl B., van&nbsp;der Kouwe&nbsp;A., Destrieux C., Halgren E., Ségonne F., Salat&nbsp;D. H., Busa E., Seidman&nbsp;L. J., Goldstein J., Kennedy D., Caviness V., Makris N., Rosen B., and Dale&nbsp;A. M.
+Automatically parcellating the human cerebral cortex.
+<em>Cerebral Cortex</em>, 2004. <a class="cite-backref" href="#ref-fsaverage5-1" title="Jump back to reference 1">↩</a></p>
+<p id='nki'>Nooner&nbsp;K. B., Colcombe&nbsp;S. J., Tobe&nbsp;R. H., Mennes M., Benedict&nbsp;M. M., Moreno&nbsp;A. L., Panek L. J.&nbsp;Brown S., Zavitz&nbsp;S. T., Li&nbsp;Q., Sikka S,, Gutman D., Bangaru S., Schlachter&nbsp;R. T., Kamiel&nbsp;S. M., Anwar&nbsp;A. R, Hinz&nbsp;C. M., Kaplan&nbsp;M. S., Rachlin&nbsp;A. B., Adelsberg S., Cheung B., Khanuja R., Yan C., Craddock&nbsp;C. C., Calhoun V., Courtney W., King M., Wood D., Cox&nbsp;C. L., Kelly A. M. Di&nbsp;Martino A., Petkova E., Reiss&nbsp;P. T., Duan N., Thomsen D., Biswal B., Coffey B., Hoptman&nbsp;M. J., Javitt&nbsp;D. C., Pomara N., Sidtis&nbsp;J. J., Koplewicz&nbsp;H. S., Castellanos&nbsp;F. X., Leventhal&nbsp;B. L., and Milham&nbsp;M. P.
+The nki-rockland sample: a model for accelerating the pace of discovery science in psychiatry.
+<em>Frontiers in Neuroscience</em>, 2012. <a class="cite-backref" href="#ref-nki-1" title="Jump back to reference 1">↩</a></p>
+<p id='destrieux'>C.&nbsp;Destrieux, Fischl B., Dale&nbsp;A. M., and Halgren A.
+A sulcal depth-based anatomical parcellation of the cerebral cortex.
+<em>Neuroimage</em>, 2009. <a class="cite-backref" href="#ref-destrieux-1" title="Jump back to reference 1">↩</a></p>
+
             <a href="#" class="go-top">Go Top</a>
     <div class="comments">
         <div id="disqus_thread"></div>
