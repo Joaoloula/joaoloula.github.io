@@ -242,7 +242,189 @@ Nilearn: machine learning for neuro-imaging in python.
 &lt;p id='abide'&gt;A.&amp;nbsp;Di&amp;nbsp;Martino, C.&amp;nbsp;G. Yan, Q.&amp;nbsp;Li, E.&amp;nbsp;Denio, F.&amp;nbsp;X. Castellanos, K.&amp;nbsp;Alaerts, J.&amp;nbsp;S. Anderson, M.&amp;nbsp;Assaf, S.&amp;nbsp;Y. Bookheimer, M.&amp;nbsp;Dapretto, B.&amp;nbsp;Deen, S.&amp;nbsp;Delmonte, I.&amp;nbsp;Dinstein, B.&amp;nbsp;Ertl-Wagner, D.&amp;nbsp;A. Fair, L.&amp;nbsp;Gallagher, D.&amp;nbsp;P. Kennedy, C.&amp;nbsp;L. Keown, C.&amp;nbsp;Keysers, J.&amp;nbsp;E. Lainhart, C.&amp;nbsp;Lord, B.&amp;nbsp;Luna, V.&amp;nbsp;Menon, N.&amp;nbsp;J. Minshew, C.&amp;nbsp;S. Monk, S.&amp;nbsp;Mueller, R.&amp;nbsp;A. Müller, M.&amp;nbsp;B. Nebel, J.&amp;nbsp;T. Nigg, K.&amp;nbsp;O'Hearn, K.&amp;nbsp;A. Pelphrey, S.&amp;nbsp;J. Peltier, J.&amp;nbsp;D. Rudie, S.&amp;nbsp;Sunaert, M.&amp;nbsp;Thioux, J.&amp;nbsp;M. Tyszka, L.&amp;nbsp;Q. Uddin, J.&amp;nbsp;S. Verhoeven, N.&amp;nbsp;Wenderoth, J.&amp;nbsp;L. Wiggins, S.&amp;nbsp;H. Mostofsky, and M.&amp;nbsp;P. Milham.
 The autism brain imaging data exchange: towards a large-scale evaluation of the intrinsic brain architecture in autism.
 &lt;em&gt;Mol Psychiatry&lt;/em&gt;, 2014. &lt;a class="cite-backref" href="#ref-abide-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
-</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;p&gt;In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg (you can take a look at the PR's progress &lt;a href="https://github.com/nilearn/nilearn/pull/1016"&gt;here&lt;/a&gt;) with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.&lt;/p&gt;
+</summary><category term="functional atlas"></category><category term="fmri"></category><category term="resting state"></category></entry><entry><title>Reinforcement Learning in the Brain</title><link href="/reinforcement-learning.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:reinforcement-learning.html</id><summary type="html">&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;In this post we'll take a look at reinforcement learning, one of the most successful frameworks lately both for enabling AI to perform human-like tasks and for understanding how humans themselves learn these behaviors. &lt;/p&gt;
+&lt;p&gt;The premise is that of an agent in an environment in which it is trying to achieve a certain goal. The agent interacts with the environment in two ways that form a feedback loop:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;It receives as inputs from the environment observations and rewards&lt;/li&gt;
+&lt;li&gt;It outputs actions that can in their turn alter the environment&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;It is the fact that the agent is driven to achieve a certain goal that forces it to extract, from noisy observations and uncertain rewards, a strategy for optimizing their actions. This strategy can be as simple as implementing standard responses to given stimuli and as complicated as building a sophisticated statistical model for the environment. In this post we'll take a look particularly at examples motivated by animal behavior, and discuss what the reinforcement learning framework can offer us in terms of understanding the brain.&lt;/p&gt;
+&lt;h2&gt;Markov Decision Processes&lt;/h2&gt;
+&lt;p&gt;Suppose we have an agent, say a mouse, in an environment consisting of states it can occupy, possible actions that take it from one state to another, and rewards associated with different states: for example a maze with different kinds of food scattered around it, ranging from delicious to totally unappetizing. It might look a little like this:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement_learning/maze_mouse.png"/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;How can we find the path that optimizes the mouse's rewards? Well, we can start from the Bellman equation:&lt;/p&gt;
+&lt;div class="math"&gt;$$Q\left(s_t\right) = \max_{a_t} \{ R(s_t, a_t) + Q \left(s_{t+1}\right)\}$$&lt;/div&gt;
+&lt;p&gt;What this equation, the principle of dynamic programming, tells us, is that calculating the Q-value of a given node is as easy as starting from the end (where the values are equivalent to the rewards) and working backwards by computing the optimal step at each time point. Following this procedure gives us the optimal path:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement_learning/maze_path_mouse.png"/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The real world, however, is a lot messier: for one thing, both state transitions and rewards are usually not deterministic, but rather probabilistic in nature. Things for our mouse might actually look more like this:&lt;/p&gt;
+&lt;p align="center"&gt;
+  &lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement_learning/maze_complicated_mouse.png"/&gt;
+&lt;/p&gt;
+
+&lt;p&gt;The setup is the following: the agent starts in an initial state, and at each time point he can pick one of two actions (take the arrow up or down), which can lead him to different states with some given probability. Each state is also associated with a probabilistic reward (rewards can alternatively be associated not with a state, but rather with a specific state transition) : this kind of system is what's called a Markov Decision Process -- a generalization of Markov Chains allowing for actions (i.e. control of the stochastic system) and rewards.&lt;/p&gt;
+&lt;p&gt;So, how can an agent go about solving this? Well, we can still take inspiration from Bellman's equation, while keeping running estimates for parameters of interest: given a policy &lt;span class="math"&gt;\(\pi\)&lt;/span&gt; for the agent's decision-making, an immediate reward &lt;span class="math"&gt;\(r_t\)&lt;/span&gt; and transition probabilities for the state space &lt;span class="math"&gt;\(P\left(s_{t+1}| s_t, a_t\right)\)&lt;/span&gt; at time t, we have:&lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi\left(s_t, a_t\right) = r_t + \gamma\sum_{s_{t+1}} P\left(s_{t+1}| s_t, a_t\right) Q_\pi\left(s_{t+1}, \pi \left(s_{t+1}\right)\right) $$&lt;/div&gt;
+&lt;p&gt;We can immediately see the resemblance to the deterministic case: in fact, the second term in the right-hand side is just an expected value over the different possible transitions, seeing as the problem is now probabilistic in nature. The term &lt;span class="math"&gt;\(\gamma\)&lt;/span&gt; is called a discount factor, and it modulates the importance between immediate and future rewards.&lt;/p&gt;
+&lt;p&gt;From this equation spring the two most important reinforcement learning algorithm classes for neuroscience.&lt;/p&gt;
+&lt;h2&gt;Model-free learning&lt;/h2&gt;
+&lt;p&gt;Model-free learning focuses on estimating the left-hand side of the equation: it keeps a table of state-action pair values that is updated through experience, for example by computing a temporal difference:&lt;/p&gt;
+&lt;div class="math"&gt;$$ \delta_t = r_t + \gamma Q (s_{t+1}, a_{t+1}) - Q(s_t, a_t) $$&lt;/div&gt;
+&lt;p&gt;which can then be used by a &lt;a href="https://en.wikipedia.org/wiki/State-Action-Reward-State-Action"&gt;SARSA&lt;/a&gt; algorithm for calculating the new state-action pair values.&lt;/p&gt;
+&lt;p&gt;Model-free learning pros and cons are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code class="green"&gt;Computationally efficient, since decision-making consists of looking up a table.&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code class="red"&gt;Inflexible to changes in the MDP structure (transition probabilities or rewards), since they're not explicited in the model and thus can only be accounted for by relearning state-action values.&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;&lt;img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement_learning/maze_mouse.png"/&gt;
+&lt;figure&gt;
+    &lt;img src="https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement_learning/F3_large.jpg" alt='missing' align='middle' /&gt;
+    &lt;figcaption&gt; &lt;sup&gt; The most successful prediction of model free RL: the dopamine system. When a stimulus-reward pair is learned, dopaminergic neurons fire at the stimulus onset and not at the reward; when the reward does not succeed the stimulus, we see instead a negative firing rate. This evidence points towards the neural implementation of a TD-like algorithm &lt;a href='#schulz' id='ref-schulz-1'&gt;(Schultz et al., 1997)&lt;/a&gt; &lt;/sup&gt;
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h2&gt;Model-based learning&lt;/h2&gt;
+&lt;p&gt;Conversely, we can focus on estimating the right side of the equation: this leads to model-based learning. The idea is to keep running estimates of rewards and transition probabilities (&lt;span class="math"&gt;\(P\left(r_{t}| s_t\right)\)&lt;/span&gt;, &lt;span class="math"&gt;\(P\left(s_{t+1}| s_t, a_t\right)\)&lt;/span&gt;), and thus to have an explicit internal model for the MDP. These estimations can be computed simply by counting immediate events, and can then be strung together at decision time.&lt;/p&gt;
+&lt;p&gt;Model-based learning pros and cons are:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code class="green"&gt;Highly flexible: rewards and transition probabilities can be easily re-calculated in case of changes to the environment.&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;code class="red"&gt;Computationally expensive, since running estimates of all parameters for an internal model of the MDP must be kept, and used for decision-making computations.&lt;/code&gt;&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;\section*{When to use each learning algorithm class?}&lt;/p&gt;
+&lt;p&gt;While from the pros and cons listed we could imagine having a grasp on which learning tasks benefit one class of algorithms over the other, a recent study &lt;a href='#kool' id='ref-kool-1'&gt;(Kool et al., 2016)&lt;/a&gt; argues that the classically used Daw 2-step task &lt;a href='#daw' id='ref-daw-1'&gt;(Daw et al., 2011)&lt;/a&gt; and its variations do not offer a model-free vs. model-based trade-off. It is argued that this is a cause of the following characteristics:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;Second-stage probabilities are not highly distinguishable&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Drift rates for the reward probabilities are too slow&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;State transitions are non-deterministic&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Presence of two choices in the second stage&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Observations are binary and thus not highly informative&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;The article goes on to propose a variant of the Daw task that addresses all these points, thus having a bigger reward range, faster drifts, deterministic transitions, no choices at the second step and continuous rewards. It goes on to show both by simulation and experiments that the trade-off is present in that variant.&lt;/p&gt;
+&lt;h2&gt;Integrating episodic memory and reinforcement learning&lt;/h2&gt;
+&lt;p&gt;Many problems arise when trying to apply the view of reinforcement learning we presented here to real-world problems solved by the brain : the following issues are of particular concern:
+- State spaces are often high-dimesional and continuous, besides being only partially observable
+- Observations are sparse
+- The Markov property (memorylessness of the stochastic process) is not held: rewards can depend on long strings of state-action pairs.&lt;/p&gt;
+&lt;p&gt;How then is the brain able to learn whilst generalizing such complex structure from such limited data? A recent paper &lt;a href='#episodic-learning' id='ref-episodic-learning-1'&gt;(Gershman and Daw, 2016)&lt;/a&gt; argues that episodic memory could help address these concerns.&lt;/p&gt;
+&lt;p&gt;Episodic memory refers to detailed autobiographical memories, things like memories of your wedding ceremony or of what you had for breakfast this morning. These instances are called &lt;em&gt;episodes&lt;/em&gt;. &lt;/p&gt;
+&lt;p&gt;The idea of the RL model is the following: the value of a state can be approximated by the interpolation of different episodes using a kernel function &lt;span class="math"&gt;\(K\)&lt;/span&gt;. For example, supposing all episodes to have a fixed length &lt;span class="math"&gt;\(t\)&lt;/span&gt;, if we denote by &lt;span class="math"&gt;\( s_{t}^{m}\)&lt;/span&gt; the state at time &lt;span class="math"&gt;\(t\)&lt;/span&gt; under the episode &lt;span class="math"&gt;\(m\)&lt;/span&gt;, we have:&lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0, a) = \frac{\sum_{m} R_mK(s_0, s_{t}^{m})}{N}$$&lt;/div&gt;
+&lt;p&gt;where &lt;span class="math"&gt;\(R_m\)&lt;/span&gt; is the reward for episode &lt;span class="math"&gt;\(m\)&lt;/span&gt;, and &lt;span class="math"&gt;\(N\)&lt;/span&gt; is a normalization factor, equal to &lt;span class="math"&gt;\(\sum_m K(s_0, s_{t}^{m})\)&lt;/span&gt;. &lt;/p&gt;
+&lt;p&gt;The Kernel is at the heart of the model's generalization power: it can be, for example, a gaussian allowing for smoothly combining episodes, or a step function that only averages episodes whose final states are close enough to &lt;span class="math"&gt;\(s_0\)&lt;/span&gt; by some distance metric. This flexibility can capture the structure of different kinds of state spaces.&lt;/p&gt;
+&lt;p&gt;The temporal dependency problem remains: in order to address it, we must first note that the breaking of the Markov property &lt;em&gt;inside&lt;/em&gt; an episode poses no problem for the model. We can therefore chunk temporal dependencies inside episodes, using the Markov property only to stitch them together through the Bellman equation.&lt;/p&gt;
+&lt;p&gt;This might look something like this, by allowing episodes of various lengths &lt;span class="math"&gt;\(t_m\)&lt;/span&gt; and letting the Kernel take those lengths into account: &lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0, a) = \frac{1}{N} \sum_{m} K(s_1, s_{t_m}^{m}, t_m) \left[R_m +\gamma^{t_m}\sum_{s}P(s_{t_m+1}^{m}=s| s_{t_m}^{m}, \pi(s_{t_m}^{m}))Q_\pi(s, \pi(s))\right]$$&lt;/div&gt;
+&lt;p&gt;where &lt;span class="math"&gt;\(N\)&lt;/span&gt; is still a normalization parameter. &lt;/p&gt;
+&lt;h2&gt;A link between episodes and MF/MB algorithms?&lt;/h2&gt;
+&lt;p&gt;It is interesting to note the influence of one of the model's parameters, namely the size of the episodes, on the learning algorithm. Take for example the Daw 2-step task, or better yet the variant proposed by &lt;a href='#kool' id='ref-kool-2'&gt;(Kool et al., 2016)&lt;/a&gt;. We have two possible starting states, &lt;span class="math"&gt;\(s_0^A\)&lt;/span&gt; and &lt;span class="math"&gt;\(s_0^B\)&lt;/span&gt;, each with two possible actions &lt;span class="math"&gt;\(a_1\)&lt;/span&gt; and &lt;span class="math"&gt;\(a_2\)&lt;/span&gt; that lead deterministically to &lt;span class="math"&gt;\(s_1\)&lt;/span&gt; and &lt;span class="math"&gt;\(s_2\)&lt;/span&gt; that will, at a given trial &lt;span class="math"&gt;\(m\)&lt;/span&gt;, present rewards &lt;span class="math"&gt;\(R_1^m\)&lt;/span&gt; and &lt;span class="math"&gt;\(R_2^m\)&lt;/span&gt;.&lt;/p&gt;
+&lt;p&gt;If we denote &lt;span class="math"&gt;\(M\)&lt;/span&gt; the set of episodes of length 2, and &lt;span class="math"&gt;\(M_A\)&lt;/span&gt; and &lt;span class="math"&gt;\(M_B\)&lt;/span&gt; the respective subsets of episodes starting from &lt;span class="math"&gt;\(s_0^A\)&lt;/span&gt; and &lt;span class="math"&gt;\(s_0^B\)&lt;/span&gt;, the value estimations for the two possible first actions with a constant kernel will look like this:&lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0^A, a_1) = \frac{1}{|M_A|} \sum_{m \in M_A} R_m^1$$&lt;/div&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0^B, a_1) = \frac{1}{|M_B|} \sum_{m \in M_B} R_m^1$$&lt;/div&gt;
+&lt;p&gt;the formulas for action 2 being analogous. We might, for example, want to add a Kernel term accounting for the recentness of the episode (to track reward drift), but I want to focus on something else for the moment: note that there is no shared term between these formulas, i.e. the value estimation for &lt;span class="math"&gt;\(s_0^A\)&lt;/span&gt; only looks at episodes starting in &lt;span class="math"&gt;\(A\)&lt;/span&gt;, and the same for &lt;span class="math"&gt;\(s_0^B\)&lt;/span&gt; In order words, a sudden change in the reward &lt;span class="math"&gt;\(R_1\)&lt;/span&gt;, if experienced during a trial starting at &lt;span class="math"&gt;\(s_0^B\)&lt;/span&gt;, will not influence the estimation for &lt;span class="math"&gt;\(Q_\pi(s_0^A, a_1)\)&lt;/span&gt; : this kind of insensitivity to reward devaluation is a trademark of model-free learning.&lt;/p&gt;
+&lt;p&gt;Indeed, these formulas are nothing more than value tables, and are compatible with MF learning if we imagine it being pursued with a simple reward average instead of something like a TD algorithm.&lt;/p&gt;
+&lt;p&gt;On the other hand, if we set the episode length to one, keeping the same notation, we'll get:&lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0^A, a_1) = \frac{1}{|M_A|} \sum_{m \in M_A} R_0^A + (P(s_1|s_0^A, a_1)Q_\pi(s_1) + P(s_2|s_0^A, a_1)Q_\pi(s_2))  $$&lt;/div&gt;
+&lt;p&gt;,&lt;/p&gt;
+&lt;p&gt;but &lt;/p&gt;
+&lt;div class="math"&gt;$$R_0^A = 0, Q_\pi(s_i)= \frac{1}{|M|} \sum_{m \in M} R_m^i$$&lt;/div&gt;
+&lt;p&gt;, and thus, since transitions are deterministic:&lt;/p&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0^A, a_1) = \frac{1}{|M|} \sum_{m \in M} R_m^1$$&lt;/div&gt;
+&lt;div class="math"&gt;$$ Q_\pi(s_0^B, a_1) = \frac{1}{|M|} \sum_{m \in M} R_m^1$$&lt;/div&gt;
+&lt;p&gt;it is no surprise that, starting from episodes of length one, we recover the Bellman equation for MDPs, and finally get to an averaging version of MB learning, which presents the same value estimation for action 1, independent of whether we're in &lt;span class="math"&gt;\(s_0^A\)&lt;/span&gt; or &lt;span class="math"&gt;\(s_0^B\)&lt;/span&gt;.&lt;/p&gt;
+&lt;script type="text/javascript"&gt;if (!document.getElementById('mathjaxscript_pelican_#%&amp;#64;#$&amp;#64;#')) {
+    var align = "center",
+        indent = "0em",
+        linebreak = "false";
+
+    if (false) {
+        align = (screen.width &lt; 768) ? "left" : align;
+        indent = (screen.width &lt; 768) ? "0em" : indent;
+        linebreak = (screen.width &lt; 768) ? 'true' : linebreak;
+    }
+
+    var mathjaxscript = document.createElement('script');
+    var location_protocol = (false) ? 'https' : document.location.protocol;
+    if (location_protocol !== 'http' &amp;&amp; location_protocol !== 'https') location_protocol = 'https:';
+    mathjaxscript.id = 'mathjaxscript_pelican_#%&amp;#64;#$&amp;#64;#';
+    mathjaxscript.type = 'text/javascript';
+    mathjaxscript.src = location_protocol + '//cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML';
+    mathjaxscript[(window.opera ? "innerHTML" : "text")] =
+        "MathJax.Hub.Config({" +
+        "    config: ['MMLorHTML.js']," +
+        "    TeX: { extensions: ['AMSmath.js','AMSsymbols.js','noErrors.js','noUndefined.js'], equationNumbers: { autoNumber: 'AMS' }, Macros: {} }," +
+        "    jax: ['input/TeX','input/MathML','output/HTML-CSS']," +
+        "    extensions: ['tex2jax.js','mml2jax.js','MathMenu.js','MathZoom.js']," +
+        "    displayAlign: '"+ align +"'," +
+        "    displayIndent: '"+ indent +"'," +
+        "    showMathMenu: true," +
+        "    messageStyle: 'normal'," +
+        "    tex2jax: { " +
+        "        inlineMath: [ ['\\\\(','\\\\)'] ], " +
+        "        displayMath: [ ['$$','$$'] ]," +
+        "        processEscapes: true," +
+        "        preview: 'TeX'," +
+        "    }, " +
+        "    'HTML-CSS': { " +
+        "        styles: { '.MathJax_Display, .MathJax .mo, .MathJax .mi, .MathJax .mn': {color: 'inherit ! important'} }," +
+        "        linebreaks: { automatic: "+ linebreak +", width: '90% container' }," +
+        "    }, " +
+        "}); " +
+        "if ('default' !== 'default') {" +
+            "MathJax.Hub.Register.StartupHook('HTML-CSS Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax['HTML-CSS'].FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+            "MathJax.Hub.Register.StartupHook('SVG Jax Ready',function () {" +
+                "var VARIANT = MathJax.OutputJax.SVG.FONTDATA.VARIANT;" +
+                "VARIANT['normal'].fonts.unshift('MathJax_default');" +
+                "VARIANT['bold'].fonts.unshift('MathJax_default-bold');" +
+                "VARIANT['italic'].fonts.unshift('MathJax_default-italic');" +
+                "VARIANT['-tex-mathit'].fonts.unshift('MathJax_default-italic');" +
+            "});" +
+        "}";
+    (document.body || document.getElementsByTagName('head')[0]).appendChild(mathjaxscript);
+}
+&lt;/script&gt;&lt;hr&gt;
+&lt;h2&gt;Bibliography&lt;/h2&gt;
+&lt;p id='daw'&gt;N.D. Daw, S.J. Gershman, Seymour B., Dayan P., and Dolan&amp;nbsp;R. J.
+Model-based influences on human's choices and striatal prediction errors.
+&lt;em&gt;Neuron&lt;/em&gt;, 2011. &lt;a class="cite-backref" href="#ref-daw-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='episodic-learning'&gt;S.J. Gershman and N.D. Daw.
+Reinforcement learning and episodic memory in humans and animals: an integrative framework.
+&lt;em&gt;Annual Review of Psychology&lt;/em&gt;, 2016. &lt;a class="cite-backref" href="#ref-episodic-learning-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+&lt;p id='kool'&gt;W.&amp;nbsp;Kool, F.A. Cushman, and S.J. Gershman.
+When does model-based control pay off?
+&lt;em&gt;PLOS Computational Biology&lt;/em&gt;, 2016. &lt;a class="cite-backref" href="#ref-kool-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;a class="cite-backref" href="#ref-kool-1" title="Jump back to reference 1"&gt; &lt;sup&gt;1&lt;/sup&gt; &lt;/a&gt;&lt;a class="cite-backref" href="#ref-kool-2" title="Jump back to reference 2"&gt;&lt;sup&gt;2&lt;/sup&gt; &lt;/a&gt;&lt;/p&gt;
+&lt;p id='schulz'&gt;W.&amp;nbsp;Schultz, P.&amp;nbsp;Dayan, and P.&amp;nbsp;R. Montague.
+A neural substrate of prediction and reward.
+&lt;em&gt;Science&lt;/em&gt;, 1997. &lt;a class="cite-backref" href="#ref-schulz-1" title="Jump back to reference 1"&gt;↩&lt;/a&gt;&lt;/p&gt;
+</summary><category term="reinforcement learning"></category><category term="model arbitration"></category><category term="episodic memory"></category></entry><entry><title>Brain surface plotting with Nilearn</title><link href="/surface-plotting.html" rel="alternate"></link><updated>2016-04-02T14:54:00+02:00</updated><author><name>João Loula</name></author><id>tag:,2016-04-02:surface-plotting.html</id><summary type="html">&lt;p&gt;In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg (you can take a look at the PR's progress &lt;a href="https://github.com/nilearn/nilearn/pull/1016"&gt;here&lt;/a&gt;) with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.&lt;/p&gt;
+&lt;h2&gt;Setting things up&lt;/h2&gt;
 &lt;p&gt;We start by importing the libraries we're gonna need:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;plotting&lt;/span&gt;
 &lt;span class="kn"&gt;from&lt;/span&gt; &lt;span class="nn"&gt;nilearn&lt;/span&gt; &lt;span class="kn"&gt;import&lt;/span&gt; &lt;span class="n"&gt;datasets&lt;/span&gt;
@@ -302,6 +484,7 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;/pre&gt;&lt;/div&gt;
 
 
+&lt;h2&gt;Plotting&lt;/h2&gt;
 &lt;p&gt;Now for the actual plotting: we start by plotting the seed:&lt;/p&gt;
 &lt;div class="highlight"&gt;&lt;pre&gt;&lt;span&gt;&lt;/span&gt;&lt;span class="c1"&gt;# Display ROI on surface&lt;/span&gt;
 &lt;span class="n"&gt;plotting&lt;/span&gt;&lt;span class="o"&gt;.&lt;/span&gt;&lt;span class="n"&gt;plot_surf_roi&lt;/span&gt;&lt;span class="p"&gt;(&lt;/span&gt;&lt;span class="n"&gt;fsaverage5_pial&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;roi_map&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="n"&gt;labels&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt; &lt;span class="n"&gt;hemi&lt;/span&gt;&lt;span class="o"&gt;=&lt;/span&gt;&lt;span class="s1"&gt;&amp;#39;left&amp;#39;&lt;/span&gt;&lt;span class="p"&gt;,&lt;/span&gt;

@@ -65,6 +65,7 @@
                 </header>
             </section>
             <p>In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg (you can take a look at the PR's progress <a href="https://github.com/nilearn/nilearn/pull/1016">here</a>) with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.</p>
+<h2>Setting things up</h2>
 <p>We start by importing the libraries we're gonna need:</p>
 <div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">plotting</span>
 <span class="kn">from</span> <span class="nn">nilearn</span> <span class="kn">import</span> <span class="n">datasets</span>
@@ -124,6 +125,7 @@
 </pre></div>
 
 
+<h2>Plotting</h2>
 <p>Now for the actual plotting: we start by plotting the seed:</p>
 <div class="highlight"><pre><span></span><span class="c1"># Display ROI on surface</span>
 <span class="n">plotting</span><span class="o">.</span><span class="n">plot_surf_roi</span><span class="p">(</span><span class="n">fsaverage5_pial</span><span class="p">,</span> <span class="n">roi_map</span><span class="o">=</span><span class="n">labels</span><span class="p">,</span> <span class="n">hemi</span><span class="o">=</span><span class="s1">&#39;left&#39;</span><span class="p">,</span>
