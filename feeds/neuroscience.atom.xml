@@ -280,10 +280,10 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;p&gt;Model-free learning pros and cons are:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;code class="green"&gt;Computationally efficient, since decision-making consists of looking up a table.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Computationally efficient, since decision-making consists of looking up a table.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;code class="red"&gt;Inflexible to changes in the MDP structure (transition probabilities or rewards), since they're not explicited in the model and thus can only be accounted for by relearning state-action values.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Inflexible to changes in the MDP structure (transition probabilities or rewards), since they're not explicited in the model and thus can only be accounted for by relearning state-action values.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;figure&gt;
@@ -296,10 +296,10 @@ The autism brain imaging data exchange: towards a large-scale evaluation of the 
 &lt;p&gt;Model-based learning pros and cons are:&lt;/p&gt;
 &lt;ul&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;code class="green"&gt;Highly flexible: rewards and transition probabilities can be easily re-calculated in case of changes to the environment.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Highly flexible: rewards and transition probabilities can be easily re-calculated in case of changes to the environment.&lt;/p&gt;
 &lt;/li&gt;
 &lt;li&gt;
-&lt;p&gt;&lt;code class="red"&gt;Computationally expensive, since running estimates of all parameters for an internal model of the MDP must be kept, and used for decision-making computations.&lt;/code&gt;&lt;/p&gt;
+&lt;p&gt;Computationally expensive, since running estimates of all parameters for an internal model of the MDP must be kept, and used for decision-making computations.&lt;/p&gt;
 &lt;/li&gt;
 &lt;/ul&gt;
 &lt;p&gt;\section*{When to use each learning algorithm class?}&lt;/p&gt;
