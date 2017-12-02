@@ -1,0 +1,257 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+
+</head>
+<body>
+<div id="centered" style="margin: 0 auto; width:800px; word-wrap: break-word;">
+<p><a href="http://joaoloula.github.io">Home</a></p>
+<p>This post is based on the Nilearn tutorial given by myself and Alex Abraham at the 2016 Brainhack Vienna: in it, we'll give a brief introduction to Nilearn and its functionalities, and we'll present a usecase of extracting a functional brain atlas from the ABIDE resting state dataset. The presentation slides along with the tutorial notebook can be found <a href="https://github.com/Joaoloula/nilearn-tutorial-brainhack-2016-vienna">here</a>.</p>
+<h2 id="nilearn">Nilearn</h2>
+<p>Nilearn is a python module for statistical and machine learning analysis on brain data: it leverages python's simplicity and versatility into an easy-to-use integrated pipeline. Having analysis run on single, simple scripts allows for better reproducibility than, say, clicking on things in a GUI.</p>
+<p>This is how a typical Nilearn analysis goes:</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/nilearn_candy.png"; align='center'  style="max-width:100%;
+  max-height:100%;"/>
+<figcaption>
+<sup> Source: <span class="citation">Abraham et al. 2016.</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/masking.jpg"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Source: <span class="citation">Abraham et al. 2016.</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<p>Next, we'll take a look at a use case to see how the module works in action, on the ABIDE autism resting-state data <span class="citation">(Di Martino et al. 2014)</span>.</p>
+<h2 id="brain-atlas">Brain atlas</h2>
+<p>Before analyzing functional connectivity, we need to reduce the dimensionality of the problem. To do that, we estimate an atlas directly on our data. We'll start by importing some classic libraries:</p>
+<pre style="background-color: #272822;color: #F8F8F2"><code>
+<span class="co"># This line allows plotting directly in the notebook</span>
+%matplotlib inline
+
+<span class="co"># Python scientific package</span>
+import numpy as np</code></pre>
+<h3 id="loading-the-data">Loading the data</h3>
+<p>Nilearn provides a bunch of automatic downloaders to ease reproducibility of the analysis. With nilearn, an analysis is run in a single script and can be shared easily. The nilearn fetchers can be found in the module nilearn.datasets.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python" ><code class="sourceCode python"><span class="im">from</span> nilearn.datasets <span class="im">import</span> fetch_abide_pcp
+
+
+<span class="co"># We specify the site and number of subjects we want to download</span>
+abide <span class="op">=</span> fetch_abide_pcp(derivatives<span class="op">=</span>[<span class="st">&#39;func_preproc&#39;</span>],
+                        SITE_ID<span class="op">=</span>[<span class="st">&#39;NYU&#39;</span>],
+                        n_subjects<span class="op">=</span><span class="dv">3</span>)
+
+<span class="co"># We look at the available data in this dataset</span>
+<span class="bu">print</span>(abide.keys())</code></pre></div>
+<p>We can print a description of the dataset:</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="bu">print</span>(abide.description)</code></pre></div>
+<p>Retrieving the functional dataset is also straightforward:</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># To get the functional dataset, we have to retrieve the variable &#39;func_preproc&#39;</span>
+func <span class="op">=</span> abide.func_preproc
+
+<span class="co"># We can also look at where the data is loaded</span>
+<span class="bu">print</span>(func[<span class="dv">1</span>])</code></pre></div>
+<h3 id="computing-a-brain-atlas">Computing a brain atlas</h3>
+<p>Several reference atlases are available in nilearn. We also provide functions to compute a brain atlas directly from the data. In this example, we'll do this using a group ICA implementation called Canonical ICA.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> nilearn <span class="im">import</span> decomposition
+
+<span class="co"># CanICA is nilearn&#39;s approach of group ICA. It directly embeds a masker.</span>
+canica <span class="op">=</span> decomposition.CanICA(n_components<span class="op">=</span><span class="dv">20</span>, mask_strategy<span class="op">=</span><span class="st">&#39;background&#39;</span>)
+canica.fit(func)</code></pre></div>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Retrieve the components</span>
+components <span class="op">=</span> canica.components_
+
+<span class="co"># Use CanICA&#39;s masker to project the components back into 3D space</span>
+components_img <span class="op">=</span> canica.masker_.inverse_transform(components)
+
+<span class="co"># We visualize the generated atlas</span>
+<span class="im">from</span> nilearn <span class="im">import</span> plotting, image
+
+plotting.plot_stat_map(image.index_img(components_img, <span class="dv">9</span>), title<span class="op">=</span><span class="st">&#39;DMN&#39;</span>)
+plotting.show()</code></pre ></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/DMN.png"/>
+</p>
+<h3 id="extracting-subject-specific-timeseries-signals-from-brain-parcellations">Extracting subject specific timeseries signals from brain parcellations</h3>
+<p>Computing mask from the data, filtering, extracting data from the in-mask voxels can be processed easily by using nilearn classes such as NiftiMasker, NiftiMapsMasker, NiftiLabelsMasker which can be imported from nilearn.input_data module. The advantage of using such tools from this module is that we can restrict our analysis to mask specific voxels timeseries data. For instance, class NiftiMasker can be used to compute mask over the data and apply preprocessing steps such as filtering, smoothing, standardizing and detrending on voxels timeseries signals. This type of processing is very much necessary, particularly during resting state fMRI data analysis. Additional to NiftiMasker, classes NiftiMapsMasker and NiftiLabelsMasker, can be used to extract subject specific timeseries signals on each subject data provided with the atlas maps (3D or 4D) comprising of specific brain regions. NiftiMapsMasker operated on 4D atlas maps, can be used to extract signals from each 4th dimensional map using least squares regression. Whereas, NiftiLabelsMasker operated on 3D maps denoted as labels image, can be used to extract averaged timeseries from group of voxels that correponds to each label in the image.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Import and initialize `NiftiMapsMasker` object and call `fit_transform` to</span>
+<span class="co"># extract timeseries signals from computed atlas.</span>
+<span class="im">from</span> nilearn.input_data <span class="im">import</span> NiftiMapsMasker
+
+<span class="co"># The parameters used are maps_img as parcellations, resampling to maps image,</span>
+<span class="co"># smoothing of 6mm, detrending, standardizing and filtering (TR in sec). These later</span>
+<span class="co"># parameters are applied automatically when extracting timeseries data.</span>
+masker <span class="op">=</span> NiftiMapsMasker(components_img, smoothing_fwhm<span class="op">=</span><span class="dv">6</span>,
+                         standardize<span class="op">=</span><span class="va">True</span>, detrend<span class="op">=</span><span class="va">True</span>,
+                         t_r<span class="op">=</span><span class="fl">2.5</span>, low_pass<span class="op">=</span><span class="fl">0.1</span>,
+                         high_pass<span class="op">=</span><span class="fl">0.01</span>)</code></pre></div>
+<h3 id="extracting-time-series-for-each-subject">Extracting time series for each subject</h3>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># We loop over the subjects to extract the time series</span>
+subjects_timeseries <span class="op">=</span> []
+<span class="cf">for</span> subject_func <span class="op">in</span> func:
+    subjects_timeseries.append(masker.fit_transform(subject_func))</code></pre></div>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Visualizing extracted timeseries signals. We import matplotlib.pyplot</span>
+<span class="im">import</span> matplotlib.pyplot <span class="im">as</span> plt
+
+
+<span class="co"># We loop over the subjects to extract the time series</span>
+<span class="co"># We show them for a single subject</span>
+timeseries <span class="op">=</span> subjects_timeseries[<span class="dv">0</span>]
+<span class="bu">print</span>(timeseries.shape) <span class="co"># (number of scans/time points, number of brain regions/parcellations)</span>
+plt.plot(timeseries)
+plt.title(<span class="st">&#39;Timeseries for single subject shown for 20 brain regions&#39;</span>)
+plt.xlabel(<span class="st">&#39;Number of regions&#39;</span>)
+plt.ylabel(<span class="st">&#39;Normalized signal&#39;</span>)
+plt.show()</code></pre></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/time-series.png"/>
+</p>
+<h3 id="extracting-regions-from-computed-atlas">Extracting regions from computed atlas</h3>
+<p>ICA requires post-preprocessing. Here we use the RegionExtractor that thresholds the maps and extract brain regions.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> nilearn.regions <span class="im">import</span> RegionExtractor
+
+
+extractor <span class="op">=</span> RegionExtractor(components_img, threshold<span class="op">=</span><span class="dv">2</span>.,
+                            thresholding_strategy<span class="op">=</span>
+                            <span class="st">&#39;ratio_n_voxels&#39;</span>,
+                            extractor<span class="op">=</span><span class="st">&#39;local_regions&#39;</span>,
+                            standardize<span class="op">=</span><span class="va">True</span>,
+                            min_region_size<span class="op">=</span><span class="dv">1350</span>)
+
+<span class="co"># Just call fit() to process for regions extraction</span>
+extractor.fit()
+
+<span class="co"># Extracted regions are stored in regions_img_</span>
+regions_extracted_img <span class="op">=</span> extractor.regions_img_
+
+<span class="co"># Total number of regions extracted</span>
+n_regions_extracted <span class="op">=</span> regions_extracted_img.shape[<span class="op">-</span><span class="dv">1</span>]
+
+<span class="co"># Visualization of region extraction results</span>
+title <span class="op">=</span> (<span class="st">&#39;</span><span class="sc">%d</span><span class="st"> regions are extracted from </span><span class="sc">%d</span><span class="st"> components.&#39;</span>
+         <span class="op">%</span> (n_regions_extracted, <span class="dv">20</span>))
+plotting.plot_prob_atlas(regions_extracted_img,
+                         view_type<span class="op">=</span><span class="st">&#39;filled_contours&#39;</span>,
+                         title<span class="op">=</span>title, threshold<span class="op">=</span><span class="fl">0.008</span>)</code></pre></div>
+<h3 id="connectomes-estimation">Connectomes Estimation</h3>
+<p>Connectivity is typically estimated using correlation between time series. Recent studies has shown that partial correlation could give better results. Different estimators can also be used to apply some regularization on the matrix coefficients. Nilearn's ConnectivityMeasure object (in the nilearn.connectome module) provides three types of connectivity matrix: correlation, partial_correlation, and tangent (a method developped in our laboratory). ConnectivityMeasure can also use any covariance estimator shipped by scikit-learn (ShrunkCovariance, GraphLasso). To start off, we estimate the connectivity using default parameters. We check that we have one matrix per subject.</p>
+
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> nilearn.connectome <span class="im">import</span> ConnectivityMeasure
+
+
+conn_est <span class="op">=</span> ConnectivityMeasure(kind<span class="op">=</span><span class="st">&#39;partial correlation&#39;</span>)
+conn_matrices <span class="op">=</span> conn_est.fit_transform(abide.rois_cc200)</code></pre></div>
+<h3 id="plotting-connectivity-matrix">Plotting connectivity matrix</h3>
+<p>We visualize the connectivity matrix of the first subject. This code is directly taken from a nilearn example.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python">plt.imshow(conn_matrices[<span class="dv">0</span>], vmax<span class="op">=</span>.<span class="dv">20</span>, vmin<span class="op">=-</span>.<span class="dv">20</span>, cmap<span class="op">=</span><span class="st">&#39;RdBu_r&#39;</span>)
+plt.colorbar()
+plt.title(<span class="st">&#39;Connectivity matrix of subject 0&#39;</span>)</code></pre></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/functional-atlas/connectivity-matrix.png"/>
+</p>
+<h3 id="extracting-useful-coefficients">Extracting useful coefficients</h3>
+<p>Connecitivity matrices are symmetric. As such, half of the coefficients are redundant. They can even impact the results of some predictors. In order to &quot;extract&quot; these coefficients, we want to use a mask. numpy.tril function can help us with this task. However, using masking is hazardous without a good knowledge of numpy. Fortunately, nilearn provides a function to do this automatically and efficiently: nilearn.connectome.sym_to_vec.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> nilearn.connectome <span class="im">import</span> sym_to_vec
+
+
+X <span class="op">=</span> sym_to_vec(conn_matrices)
+X.shape</code></pre></div>
+<h3 id="setting-up-cross-validation">Setting up cross-validation</h3>
+<p>Getting reliable prediction results require to predict on unseen data. Cross-validation consists in leaving out a part of the dataset (testing set) to validate the model learnt on the remaining of the dataset (training set). Scikit-learn has all the utils necessary to do automatic cross-validation. In the case of ABIDE, we have a very heterogenous dataset and we want the sets to be balanced in term of acquisition sites and condition. We use a stratified cross-validation method for that.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> sklearn.cross_validation <span class="im">import</span> StratifiedShuffleSplit
+
+
+ids <span class="op">=</span> []
+<span class="cf">for</span> site_id, dx <span class="op">in</span> abide.phenotypic[[<span class="st">&#39;SITE_ID&#39;</span>, <span class="st">&#39;DX_GROUP&#39;</span>]]:
+    ids.append(<span class="bu">str</span>(site_id) <span class="op">+</span> <span class="bu">str</span>(dx))
+cv <span class="op">=</span> StratifiedShuffleSplit(ids, n_iter<span class="op">=</span><span class="dv">10</span>, test_size<span class="op">=</span>.<span class="dv">2</span>)</code></pre></div>
+<h3 id="prediction-using-support-vector-classifier">Prediction using Support Vector Classifier</h3>
+<p>Now that we have shown how to estimate a connectome and extract the interesting coefficients, we will see how to use them to diagnose ASD vs healthy individuals. For that purpose, we use a Support Vector Machine. This is one of the most simple classifiers. We use the default parameters in a first time and look at classification scores.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> sklearn.svm <span class="im">import</span> LinearSVC
+<span class="im">from</span> sklearn.cross_validation <span class="im">import</span> cross_val_score
+<span class="im">import</span> numpy <span class="im">as</span> np
+
+
+<span class="co"># DX_GROUP are the labels of the ABIDE dataset. 1=ASD, 2=Healthy</span>
+y <span class="op">=</span> abide.phenotypic[<span class="st">&#39;DX_GROUP&#39;</span>]
+predictor <span class="op">=</span> LinearSVC(C<span class="op">=</span><span class="fl">0.01</span>)
+np.mean(cross_val_score(predictor, X, y, cv<span class="op">=</span>cv))</code></pre></div>
+<h3 id="exploring-other-methods-and-parameters">Exploring other methods and parameters</h3>
+<p>So far, we built a basic prediction procedure without tuning the parameters. Now we use for loops to explore several options. Note that the imbrication of the steps allow us to re-use connectivity matrix computed in the first loop for the different predictors. The same result can be achieved using nilearn's caching capacities.</p>
+<div class="sourceCode" style="background-color: #272822;color: #F8F8F2"><pre class="brush: python"><code class="sourceCode python"><span class="im">from</span> sklearn.linear_model <span class="im">import</span> RidgeClassifier
+
+
+measures <span class="op">=</span> [<span class="st">&#39;correlation&#39;</span>, <span class="st">&#39;partial correlation&#39;</span>, <span class="st">&#39;tangent&#39;</span>]
+predictors <span class="op">=</span> [
+    (<span class="st">&#39;svc_l2&#39;</span>, LinearSVC(C<span class="op">=</span><span class="dv">1</span>)),
+    (<span class="st">&#39;svc_l1&#39;</span>, LinearSVC(C<span class="op">=</span><span class="dv">1</span>, penalty<span class="op">=</span><span class="st">&#39;l1&#39;</span>, dual<span class="op">=</span><span class="va">False</span>)),
+    (<span class="st">&#39;ridge_classifier&#39;</span>, RidgeClassifier()),
+]
+
+<span class="cf">for</span> measure <span class="op">in</span> measures:
+    conn_est <span class="op">=</span> ConnectivityMeasure(kind<span class="op">=</span>measure)
+    conn_matrices <span class="op">=</span> conn_est.fit_transform(abide.rois_cc200)
+    X <span class="op">=</span> sym_to_vec(conn_matrices)
+    <span class="cf">for</span> name, predictor <span class="op">in</span> predictors:
+        <span class="bu">print</span>(measure, name, np.mean(cross_val_score(predictor, X, y, cv<span class="op">=</span>cv)))</code></pre></div>
+<p>This should show the Ridge Classifier and the SVM classifier with L1 penalty as the highest scoring options.</p>
+<div id="refs" class="references">
+<div id="ref-abide">
+<p>Di Martino, A., C. G. Yan, Q. Li, E. Denio, F. X. Castellanos, K. Alaerts, J. S. Anderson, et al. 2014. “The Autism Brain Imaging Data Exchange: Towards a Large-Scale Evaluation of the Intrinsic Brain Architecture in Autism.” <em>Mol Psychiatry</em>.</p>
+<p>Abraham, A., Estève, L., Dohmatob, E., Bzdok, D., Reddy, K., Mensch, A., Gervais, P. et al. 2016. “Nilearn: Machine Learning for Neuro-Imaging in Python.” <em>OHBM</em>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

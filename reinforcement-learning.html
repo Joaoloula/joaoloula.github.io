@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <meta name=viewport content=“width=800”>
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+    /* Color scheme stolen from Sergey Karayev */
+    a {
+    color: #1772d0;
+    text-decoration:none;
+    }
+    a:focus, a:hover {
+    color: #f09228;
+    text-decoration:none;
+    }
+    body,td,th,tr,p,a {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px
+    }
+    strong {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    }
+    heading {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 22px;
+    }
+    papertitle {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 700
+    }
+    name {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 32px;
+    }
+    .one
+    {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    }
+    .two
+    {
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    transition: opacity .2s ease-in-out;
+    -moz-transition: opacity .2s ease-in-out;
+    -webkit-transition: opacity .2s ease-in-out;
+    }
+    .fade {
+     transition: opacity .2s ease-in-out;
+     -moz-transition: opacity .2s ease-in-out;
+     -webkit-transition: opacity .2s ease-in-out;
+    }
+    span.highlight {
+        background-color: #ffffd0;
+    }
+  </style>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+</head>
+<body>
+<div id="centered" style="margin: 0 auto; width:800px; word-wrap: break-word;">
+<p><a href="http://joaoloula.github.io">Home</a></p>
+<h2 id="introduction">Introduction</h2>
+<p>In this post we'll take a look at reinforcement learning, one of the most successful frameworks lately both for enabling AI to perform human-like tasks and for understanding how humans themselves learn these behaviors.</p>
+<p>The premise is that of an agent in an environment in which it is trying to achieve a certain goal. The agent interacts with the environment in two ways that form a feedback loop:</p>
+<ul>
+<li>It receives as inputs from the environment observations and rewards</li>
+<li>It outputs actions that can in their turn alter the environment</li>
+</ul>
+<p>It is the fact that the agent is driven to achieve a certain goal that forces it to extract, from noisy observations and uncertain rewards, a strategy for optimizing their actions. This strategy can be as simple as implementing standard responses to given stimuli and as complicated as building a sophisticated statistical model for the environment. In this post we'll take a look particularly at examples motivated by animal behavior, and discuss what the reinforcement learning framework can offer us in terms of understanding the brain.</p>
+<h2 id="markov-decision-processes">Markov Decision Processes</h2>
+<p>Suppose we have an agent, say a mouse, in an environment consisting of states it can occupy, possible actions that take it from one state to another, and rewards associated with different states: for example a maze with different kinds of food scattered around it, ranging from delicious to totally unappetizing. It might look a little like this:</p>
+
+
+</div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement-learning/maze_mouse.png"/>
+</p>
+
+<div id="centered" style="margin: 0 auto; width:800px;">
+<p>How can we find the path that optimizes the mouse's rewards? Well, we can start from the Bellman equation:</p>
+<p><span class="math display">\[Q\left(s_t\right) = \max_{a_t} \{ R(s_t, a_t) + Q \left(s_{t+1}\right)\}\]</span></p>
+<p>What this equation, the principle of dynamic programming, tells us, is that calculating the Q-value of a given node is as easy as starting from the end (where the values are equivalent to the rewards) and working backwards by computing the optimal step at each time point. Following this procedure gives us the optimal path:</p>
+<p align="center">
+
+
+</div>
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement-learning/maze_path_mouse.png"/>
+</p>
+
+<div id="centered" style="margin: 0 auto; width:800px;">
+<p>The real world, however, is a lot messier: for one thing, both state transitions and rewards are usually not deterministic, but rather probabilistic in nature. Things for our mouse might actually look more like this:</p>
+
+</div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement-learning/maze_complicated_mouse.png"/>
+</p>
+<div id="centered" style="margin: 0 auto; width:800px;">
+<p>The setup is the following: the agent starts in an initial state, and at each time point he can pick one of two actions (take the arrow up or down), which can lead him to different states with some given probability. Each state is also associated with a probabilistic reward (rewards can alternatively be associated not with a state, but rather with a specific state transition) : this kind of system is what's called a Markov Decision Process -- a generalization of Markov Chains allowing for actions (i.e. control of the stochastic system) and rewards.</p>
+<p>So, how can an agent go about solving this? Well, we can still take inspiration from Bellman's equation, while keeping running estimates for parameters of interest: given a policy <span class="math inline">\(\pi\)</span> for the agent's decision-making, an immediate reward <span class="math inline">\(r_t\)</span> and transition probabilities for the state space <span class="math inline">\(P\left(s_{t+1}| s_t, a_t\right)\)</span> at time t, we have:</p>
+<p><span class="math display">\[ Q_\pi\left(s_t, a_t\right) = r_t + \gamma\sum_{s_{t+1}} P\left(s_{t+1}| s_t, a_t\right) Q_\pi\left(s_{t+1}, \pi \left(s_{t+1}\right)\right) \]</span></p>
+<p>We can immediately see the resemblance to the deterministic case: in fact, the second term in the right-hand side is just an expected value over the different possible transitions, seeing as the problem is now probabilistic in nature. The term <span class="math inline">\(\gamma\)</span> is called a discount factor, and it modulates the importance between immediate and future rewards.</p>
+<p>From this equation spring the two most important reinforcement learning algorithm classes for neuroscience.</p>
+<h2 id="model-free-learning">Model-free learning</h2>
+<p>Model-free learning focuses on estimating the left-hand side of the equation: it keeps a table of state-action pair values that is updated through experience, for example by computing a temporal difference:</p>
+<p><span class="math display">\[ \delta_t = r_t + \gamma Q (s_{t+1}, a_{t+1}) - Q(s_t, a_t) \]</span></p>
+<p>which can then be used by a <a href="https://en.wikipedia.org/wiki/State-Action-Reward-State-Action">SARSA</a> algorithm for calculating the new state-action pair values.</p>
+<p>Model-free learning pros and cons are:</p>
+<ul>
+<li><p>Computationally efficient, since decision-making consists of looking up a table.</p></li>
+<li><p>Inflexible to changes in the MDP structure (transition probabilities or rewards), since they're not explicited in the model and thus can only be accounted for by relearning state-action values.</p></li>
+</ul>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/reinforcement-learning/dopamine.jpg"/>
+</p>
+<h2 id="model-based-learning">Model-based learning</h2>
+<p>Conversely, we can focus on estimating the right side of the equation: this leads to model-based learning. The idea is to keep running estimates of rewards and transition probabilities (<span class="math inline">\(P\left(r_{t}| s_t\right)\)</span>, <span class="math inline">\(P\left(s_{t+1}| s_t, a_t\right)\)</span>), and thus to have an explicit internal model for the MDP. These estimations can be computed simply by counting immediate events, and can then be strung together at decision time.</p>
+<p>Model-based learning pros and cons are:</p>
+<ul>
+<li><p>Highly flexible: rewards and transition probabilities can be easily re-calculated in case of changes to the environment.</p></li>
+<li><p>Computationally expensive, since running estimates of all parameters for an internal model of the MDP must be kept, and used for decision-making computations.</p></li>
+</ul>
+<h2 id="when-to-use-each-learning-algorithm-class">When to use each learning algorithm class?</h2>
+<p>While from the pros and cons listed we could imagine having a grasp on which learning tasks benefit one class of algorithms over the other, a recent study <span class="citation">(Kool, Cushman, and Gershman 2016)</span> argues that the classically used Daw 2-step task <span class="citation">(Daw et al. 2011)</span> and its variations do not offer a model-free vs. model-based trade-off. It is argued that this is a cause of the following characteristics:</p>
+<ul>
+<li><p>Second-stage probabilities are not highly distinguishable</p></li>
+<li><p>Drift rates for the reward probabilities are too slow</p></li>
+<li><p>State transitions are non-deterministic</p></li>
+<li><p>Presence of two choices in the second stage</p></li>
+<li><p>Observations are binary and thus not highly informative</p></li>
+</ul>
+<p>The article goes on to propose a variant of the Daw task that addresses all these points, thus having a bigger reward range, faster drifts, deterministic transitions, no choices at the second step and continuous rewards. It goes on to show both by simulation and experiments that the trade-off is present in that variant.</p>
+<h2 id="integrating-episodic-memory-and-reinforcement-learning">Integrating episodic memory and reinforcement learning</h2>
+<p>Many problems arise when trying to apply the view of reinforcement learning we presented here to real-world problems solved by the brain : the following issues are of particular concern: - State spaces are often high-dimesional and continuous, besides being only partially observable - Observations are sparse - The Markov property (memorylessness of the stochastic process) is not held: rewards can depend on long strings of state-action pairs.</p>
+<p>How then is the brain able to learn whilst generalizing such complex structure from such limited data? A recent paper <span class="citation">(Gershman and Daw 2016)</span> argues that episodic memory could help address these concerns.</p>
+<p>Episodic memory refers to detailed autobiographical memories, things like memories of your wedding ceremony or of what you had for breakfast this morning. These instances are called <em>episodes</em>.</p>
+<p>The idea of the RL model is the following: the value of a state can be approximated by the interpolation of different episodes using a kernel function <span class="math inline">\(K\)</span>. For example, supposing all episodes to have a fixed length <span class="math inline">\(t\)</span>, if we denote by $ s_{t}^{m}$ the state at time <span class="math inline">\(t\)</span> under the episode <span class="math inline">\(m\)</span>, we have:</p>
+<p><span class="math display">\[ Q_\pi(s_0, a) = \frac{\sum_{m} R_mK(s_0, s_{t}^{m})}{N}\]</span></p>
+<p>where <span class="math inline">\(R_m\)</span> is the reward for episode <span class="math inline">\(m\)</span>, and <span class="math inline">\(N\)</span> is a normalization factor, equal to <span class="math inline">\(\sum_m K(s_0, s_{t}^{m})\)</span>.</p>
+<p>The Kernel is at the heart of the model's generalization power: it can be, for example, a gaussian allowing for smoothly combining episodes, or a step function that only averages episodes whose final states are close enough to <span class="math inline">\(s_0\)</span> by some distance metric. This flexibility can capture the structure of different kinds of state spaces.</p>
+<p>The temporal dependency problem remains: in order to address it, we must first note that the breaking of the Markov property <em>inside</em> an episode poses no problem for the model. We can therefore chunk temporal dependencies inside episodes, using the Markov property only to stitch them together through the Bellman equation.</p>
+<p>This might look something like this, by allowing episodes of various lengths <span class="math inline">\(t_m\)</span> and letting the Kernel take those lengths into account:</p>
+<p><span class="math display">\[ Q_\pi(s_0, a) = \frac{1}{N} \sum_{m} K(s_1, s_{t_m}^{m}, t_m) \left[R_m +\gamma^{t_m}\sum_{s}P(s_{t_m+1}^{m}=s| s_{t_m}^{m}, \pi(s_{t_m}^{m}))Q_\pi(s, \pi(s))\right]\]</span></p>
+<p>where <span class="math inline">\(N\)</span> is still a normalization parameter.</p>
+<h2 id="a-link-between-episodes-and-mfmb-algorithms">A link between episodes and MF/MB algorithms?</h2>
+<p>It is interesting to note the influence of one of the model's parameters, namely the size of the episodes, on the learning algorithm. Take for example the Daw 2-step task, or better yet the variant proposed by <span class="citation">(Kool, Cushman, and Gershman 2016)</span>. We have two possible starting states, <span class="math inline">\(s_0^A\)</span> and <span class="math inline">\(s_0^B\)</span>, each with two possible actions <span class="math inline">\(a_1\)</span> and <span class="math inline">\(a_2\)</span> that lead deterministically to <span class="math inline">\(s_1\)</span> and <span class="math inline">\(s_2\)</span> that will, at a given trial <span class="math inline">\(m\)</span>, present rewards <span class="math inline">\(R_1^m\)</span> and <span class="math inline">\(R_2^m\)</span>.</p>
+<p>If we denote <span class="math inline">\(M\)</span> the set of episodes of length 2, and <span class="math inline">\(M_A\)</span> and <span class="math inline">\(M_B\)</span> the respective subsets of episodes starting from <span class="math inline">\(s_0^A\)</span> and <span class="math inline">\(s_0^B\)</span>, the value estimations for the two possible first actions with a constant kernel will look like this:</p>
+<p><span class="math display">\[ Q_\pi(s_0^A, a_1) = \frac{1}{|M_A|} \sum_{m \in M_A} R_m^1\]</span> <span class="math display">\[ Q_\pi(s_0^B, a_1) = \frac{1}{|M_B|} \sum_{m \in M_B} R_m^1\]</span></p>
+<p>the formulas for action 2 being analogous. We might, for example, want to add a Kernel term accounting for the recentness of the episode (to track reward drift), but I want to focus on something else for the moment: note that there is no shared term between these formulas, i.e. the value estimation for <span class="math inline">\(s_0^A\)</span> only looks at episodes starting in <span class="math inline">\(A\)</span>, and the same for <span class="math inline">\(s_0^B\)</span> In order words, a sudden change in the reward <span class="math inline">\(R_1\)</span>, if experienced during a trial starting at <span class="math inline">\(s_0^B\)</span>, will not influence the estimation for <span class="math inline">\(Q_\pi(s_0^A, a_1)\)</span> : this kind of insensitivity to reward devaluation is a trademark of model-free learning.</p>
+<p>Indeed, these formulas are nothing more than value tables, and are compatible with MF learning if we imagine it being pursued with a simple reward average instead of something like a TD algorithm.</p>
+<p>On the other hand, if we set the episode length to one, keeping the same notation, we'll get:</p>
+<p><span class="math display">\[ Q_\pi(s_0^A, a_1) = \frac{1}{|M_A|} \sum_{m \in M_A} R_0^A + (P(s_1|s_0^A, a_1)Q_\pi(s_1) + P(s_2|s_0^A, a_1)Q_\pi(s_2))  \]</span>,</p>
+<p>but <span class="math display">\[R_0^A = 0, Q_\pi(s_i)= \frac{1}{|M|} \sum_{m \in M} R_m^i\]</span>, and thus, since transitions are deterministic:</p>
+<p><span class="math display">\[ Q_\pi(s_0^A, a_1) = \frac{1}{|M|} \sum_{m \in M} R_m^1\]</span> <span class="math display">\[ Q_\pi(s_0^B, a_1) = \frac{1}{|M|} \sum_{m \in M} R_m^1\]</span></p>
+<p>it is no surprise that, starting from episodes of length one, we recover the Bellman equation for MDPs, and finally get to an averaging version of MB learning, which presents the same value estimation for action 1, independent of whether we're in <span class="math inline">\(s_0^A\)</span> or <span class="math inline">\(s_0^B\)</span>.</p>
+<div id="refs" class="references">
+<div id="ref-daw">
+<p>Daw, N.D., S.J. Gershman, Seymour B., Dayan P., and Dolan R. J. 2011. “Model-Based Influences on Human’s Choices and Striatal Prediction Errors.” <em>Neuron</em>.</p>
+</div>
+<div id="ref-episodic-learning">
+<p>Gershman, S.J., and N.D. Daw. 2016. “Reinforcement Learning and Episodic Memory in Humans and Animals: An Integrative Framework.” <em>Annual Review of Psychology</em>.</p>
+</div>
+<div id="ref-kool">
+<p>Kool, W., F.A. Cushman, and S.J. Gershman. 2016. “When Does Model-Based Control Pay Off?” <em>PLOS Computational Biology</em>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,282 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+    /* Color scheme stolen from Sergey Karayev */
+    a {
+    color: #1772d0;
+    text-decoration:none;
+    }
+    a:focus, a:hover {
+    color: #f09228;
+    text-decoration:none;
+    }
+    body,td,th,tr,p,a {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px
+    }
+    strong {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    }
+    heading {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 22px;
+    }
+    papertitle {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 700
+    }
+    name {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 32px;
+    }
+    .one
+    {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    }
+    .two
+    {
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    transition: opacity .2s ease-in-out;
+    -moz-transition: opacity .2s ease-in-out;
+    -webkit-transition: opacity .2s ease-in-out;
+    }
+    .fade {
+     transition: opacity .2s ease-in-out;
+     -moz-transition: opacity .2s ease-in-out;
+     -webkit-transition: opacity .2s ease-in-out;
+    }
+    span.highlight {
+        background-color: #ffffd0;
+    }
+  </style>
+  <script src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML" type="text/javascript"></script>
+</head>
+<body>
+<div id="centered" style="margin: 0 auto; width:800px; word-wrap: break-word;">
+<p><a href="http://joaoloula.github.io">Home</a></p>
+<p>Code for this post can be found <a href="https://github.com/Joaoloula/siamese-tracking">here</a></p>
+<h1 id="introduction">Introduction</h1>
+<p>The idea of this post is to take the approach described in <span class="citation">(Agrawal, Carreira, and Malik 2015)</span> and implement it in a parallelized fashion. Namely, we will create a Siamese CNNs architecture for object tracking using caffe, and distribute its computations with both coarse and medium-grain parallelization using MPI (for an introduction to neural networks and CNNs, see <a href="http://colah.github.io/posts/2014-03-NN-Manifolds-Topology/">these</a> <a href="http://colah.github.io/posts/2014-07-Conv-Nets-Modular">two</a> posts on Christopher Olah's blog, a sketch of the principles behind Siamese CNNs can be found in my <a href="http://joaoloula.github.io/face-verification.html">face-verification post</a>. Finally, a great introduction to MPI and High Performance Computing in general is Frank Nielsen's book, whose preview can be found <a href="https://books.google.fr/books?id=eDiFCwAAQBAJ&amp;pg=PR4&amp;lpg=PR4&amp;dq=ecole+polytechnique+hpc+mpi&amp;source=bl&amp;ots=3vsFSyEWs4&amp;sig=wBI83cR9_-u1PNHlE16ryUDrEgw&amp;hl=en&amp;sa=X&amp;ved=0ahUKEwiZ6dCK_cjNAhUCuBoKHfn2CwEQ6AEIIzAB#v=onepage&amp;q=ecole%20polytechnique%20hpc%20mpi&amp;f=false">here</a>).</p>
+<h1 id="tracking">Tracking</h1>
+<p>The goal of this project is to use an architecture called Siamese CNNs to solve an object tracking problem, that is, to map the location of a given object through time in video data, a central problem in areas like autonomous vehicle control and motion-capture videogames.</p>
+<p>Siamese CNNs <span class="citation">(Chopra, Hadsell, and LeCun 2005)</span> are a model consisting of two identical CNNs that share all their weights. We can think of them as embedding two inputs into some highly structured space, where this output can then be used by some other function. Notable examples include using Siamese CNNs to determine, given two photos, whether they represent the same person <span class="citation">(Sun, Wang, and Tang 2014)</span> or, given two images taking consecutively by a moving vehicle, determine the translational and rotational movements that the vehicle has performed <span class="citation">(Agrawal, Carreira, and Malik 2015)</span>.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/siamese-cnns.jpg"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Visualization of the Siamese CNNs architecture: the two CNNs are identical and share all their weights. In this scheme, their output is directed to an energy function that calculates the norm of the difference (source: <span class="citation">Chopra et al. 2005).</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<p>The idea of the implementation is to train the Siamese CNNs model on evenly spaced pairs of frames in a video of an object moving, and to feed their output to another network that will try to learn the object's movement between the two frames.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/trck2.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Example of two video frames to serve as input to the Siamese CNNs model: the bounding box represent the ground-truth of the object movement in the dataset (source: <span class="citation">Mei et al. 2008).</span></sup>
+</figcaption>
+</figure>
+</center>
+
+
+<h1 id="a-sip-of-caffe">A Sip of Caffe</h1>
+<p>Caffe <span class="citation">(Jia et al. 2014)</span> is a deep learning framework written in and interfaced with C++, created by the Berkeley Vision and Learning Center. At its core, it is based on two main objects :</p>
+<ul>
+<li><p><em>Nets</em> represent the architecture of the deep neural network : they are comprised of <em>layers</em> of different types (convolutional, fully-connected, dropout etc.) ;</p></li>
+<li><p><em>Blobs</em> are simply C++ arrays : the data structures being passed along the nets.</p></li>
+</ul>
+<p>Blobs are manipulated throughout the net in <em>forward</em> and <em>backward</em> passes : forward passes denote the process in which the neural network takes some data as input and outputs a prediction, while backward passes refer to backpropagation : the comparison of this prediction with the label and the computation of the gradients of the loss function with respect to the parameters throughout the network in a backwards fashion.</p>
+<h1 id="models">Models</h1>
+<p>One of the great strengths of Caffe is the fact that its models are stored in plaintext Google Protocol Buffer <span class="citation">(Google, n.d.)</span> schemas : it is highly serializable and human-readable, and interfaces well with many programming languages (such as C++ and Python). Let's take a look at how to declare a convolution layer in protobuf:</p>
+<pre class="protobuf"  style="background-color: #272822;color: #F8F8F2"><code>layer {
+  name: &quot;conv1&quot;
+  type: &quot;Convolution&quot;
+  bottom: &quot;data&quot;
+  top: &quot;conv1&quot;
+  param {
+    name: &quot;conv1_w&quot;
+    lr_mult: 1
+  }
+  param {
+    name: &quot;conv1_b&quot;
+    lr_mult: 2
+  }
+  convolution_param {
+    num_output: 256
+    kernel_size: 5
+    stride: 1
+    weight_filler {
+      type: &quot;gaussian&quot;
+      std: 0.01
+    }
+    bias_filler {
+      type: &quot;constant&quot;
+    }
+  }
+}</code></pre>
+<p>&quot;Name&quot; and &quot;Type&quot; are very straightforward entries : they define a name and a type for that layer. &quot;Bottom&quot; and &quot;Top&quot; define respectively the input and output of the layer. The &quot;param&quot; section defines rules for the parameters of the layers (weights and biases) : the &quot;name&quot; section will be of utmost importance in this project, since naming the parameters will allow us to share them through networks and thus realize the Siamese CNNs architecture, and &quot;lr_mult&quot; defines the multipliers of the learning rates for the parameters (making the biases change twice as fast as the weights tends to work well in practice).</p>
+<h1 id="parallelisation">Parallelisation</h1>
+<p>MPI-Caffe <span class="citation">(Lee et al. 2015)</span> is a framework built by a group at the University of Indiana to interface MPI with Caffe. By default it parallelizes all layers of the network through all nodes in the cluster : nodes can be included or excluded from computation in specific layers. Communication processes like MPIBroadcast and MPIGather are written as layers in the .protobuf file, and the framework automatically computes the equivalent expression for the gradients in the backward pass.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/mpi_caffe.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Example of a CNN architecture parallelised using MPI-Caffe. The Network is specified on the left, and for each layer there is a &quot;0&quot; when only the root is included in that layer&#39;s computation and a &quot;-&quot; when all nodes are included in it. The MPIBroadcast and MPIGather begin and end respectively the parallelised section of the code (source: <span class="citation">Lee et al. 2015).</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<p>One of the great advantages of the model is that possibility of parallelisation is twofold:</p>
+<ul>
+<li><p><em>Across Siamese Networks</em> (medium grain): the calculations performed by each of the two Siamese CNNs can be run independently, with their results being sent back to feed the function on top;</p></li>
+<li><p><em>Across Image Pairs</em> (coarse grain): to increase the number of image pairs in each batch in training, and the speed with which they are processed, we can separate them in mini-batches that are processed across different machines in a cluster.</p></li>
+</ul>
+<h1 id="mnist">MNIST</h1>
+<h2 id="the-dataset">The Dataset</h2>
+<p>MNIST <span class="citation">(LeCun, Cortes, and J.C. Burges 1999)</span> is a dataset consisting of 70,000 28x28 grayscale images (split in a train and a test set in a 6:1 proportion) representing handwritten digits, with labels from 0 to 9 that stand for the digit represented by each image. The dataset is stored in the not-so-intuitive IDX file format, but we'll be using <a href="http://pjreddie.com/projects/mnist-in-csv/">a CSV version available online</a> in this project.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/mnist.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Example of images from the MNIST dataset (source: Rodrigo Benenson's blog). </sup>
+</figcaption>
+</figure>
+</center>
+
+<h2 id="preprocessing">Preprocessing</h2>
+<p>For the tracking task, preprocessing was done by transforming images in the dataset by a combination of rotations and translations. Rotations were restrained to <span class="math inline">\(3°\)</span> intervals in <span class="math inline">\([-30°, 30°]\)</span>, and translations were chosen as integers in <span class="math inline">\([-3, 3]\)</span>.</p>
+<p>The task to be learned was posed as classification over the set of possible rotations and translations, with the loss function being the sum of the losses for rotation, x-axis translation and y-axis translation.</p>
+<h2 id="the-network">The Network</h2>
+<p>Using the nomenclature BCNN (for Base Convolutional Neural Network) for the architecture of the Siamese networks and TCNN (for Top Convolutional Neural Network) for the network that takes input from the Siamese CNNs and outputs the final prediction, the architecture used was the following:</p>
+<ul>
+<li>BCNN :
+<ul>
+<li>A convolution layer, with 3x3 kernel and 96 filters, followed by ReLU nonlinearity;</li>
+<li>A 2x2 max-pooling layer;</li>
+<li>A convolution layer, with 3x3 kernel and 256 filters, followed by ReLU;</li>
+<li>A 2x2 max-pooling layer;</li>
+</ul></li>
+<li>TCNN :
+<ul>
+<li>A fully-connected layer, with 500 filters, followed by ReLU nonlinearity;</li>
+<li>A dropout layer with 0.5 dropout;</li>
+<li>Three separate fully-connected layers, with 41, 13 and 13 outputs respectively (matching number of rotation, x translation and y translation classes);</li>
+<li>A softmax layer with logistic loss (with equal weights for each of the three predictions).</li>
+</ul></li>
+</ul>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/bcnn-tcnn.jpg"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Scheme of a forward pass in the Siamese network: each image in the pair moves through the layers L1, ... Lk in one of the BCNNs, and their output is processed by the TCNN to make the prediction (source: <span class="citation">Agrawal et al. 2015).</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<h1 id="results">Results</h1>
+<p>The network was trained using batches of 64 image pairs, with a base learning rate of <span class="math inline">\(10^{-7}\)</span> and inverse decay with <span class="math inline">\(\gamma = 0.1\)</span> and <span class="math inline">\(\text{power}=0.75\)</span>. The network seemed to converge after about 1000 iterations, to an accuracy of about <span class="math inline">\(3\%\)</span>for the rotation prediction and <span class="math inline">\(14\%\)</span> for the x and y translation predictions (about 1.25 times better than random guessing for the rotation and 2 times better for the translations).</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/mnist_training.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Value of the loss function throughout training iterations in the model</sup>
+</figcaption>
+</figure>
+</center>
+
+<h1 id="coarse-grain-parallelization">Coarse-Grain Parallelization</h1>
+<p>The simplest way to parallelize the program is to run multiple training batches on different nodes, as in the scheme below:</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/mpi_caffe_complete.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Example of a CNN architecture using fully parallelised using MPI-Caffe (source: <span class="citation">Lee et al. 2015).</span></sup>
+</figcaption>
+</figure>
+</center>
+
+<p>In this case, we're gaining a speedup in the <a href="https://en.wikipedia.org/wiki/Gustafson%27s_law">Gustafson sense</a>, that is, as we raise the number of processors, we also raise the size of the data we can compute in a given time. The speedup expression is then given by:</p>
+<p><span class="math display">\[\text{speedup}_{\text{Gustafson}}(P) = \alpha_{seq} + P(1 - \alpha_{seq}) \]</span></p>
+<p>where P is the number of processors and <span class="math inline">\(\alpha_{seq}\)</span> is the proportion of the code that's not being parallelized. Seeing as in this scheme the whole network is being parallelized, we have:</p>
+<p><span class="math display">\[\alpha_{seq} \approx 0 \Rightarrow \text{speedup}_{\text{Gustafson}}(P) \approx P \]</span></p>
+<p>Let's see how this fares in practice. In the figure below, we find a comparison of running times for the forward and backward passes in the network for one, two and four cores, the four core option using hyperthreading. What we find is that the two core case follows Gustafson's law closely, with a speedup coefficient of <span class="math inline">\(1.93\)</span>. In the four core case, however, performance is no better than with two cores, which probably means that hyperthreading is making no difference for this task.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/cores_comparison.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Comparison between forward and backward pass times when running the network with 1, 2 or 4 cores with hyperthreading.</sup>
+</figcaption>
+</figure>
+</center>
+
+<h1 id="medium-grain-parallelization">Medium-Grain Parallelization</h1>
+<p>The interest of the Siamese CNNs architecture, however, is the possibility of parallelization on a lower level : we can distribute the two BCNN streams to two different nodes in the cluster, and then gather their results to perform the computations on the TCNN. Results are shown in the figure below: we can see that performance is almost as good as in the completely parallelized scheme, which confirms our knowledge that the convolutional layers are by far the most computationally-intensive ones, so that the BCNN accounts for most of the computations in the network. We can also see that the difference between these two parallelization schemes lies almost entirely in the backward pass: we can hypothesize that this is due to increased difficulty in computing the gradient through the gather and broadcast layers in the Medium-Grain scheme.</p>
+
+<center>
+<figure>
+<img src="https://raw.githubusercontent.com/Joaoloula/siamese-tracking/master/docs/illustrations/parallelizations_comparison.png"; align='middle'  style="max-width:80%;
+  max-height:80%;"/>
+<figcaption>
+<sup> Comparison between forward and backward pass times when running the network with no parallelization, with only the BCNN parallelized or with the whole code parallelized.</sup>
+</figcaption>
+</figure>
+</center>
+
+<div id="refs" class="references">
+<div id="ref-seebymoving">
+<p>Agrawal, P., J. Carreira, and J. Malik. 2015. “Learning to See by Moving.” <em>ArXiv Preprint</em>.</p>
+</div>
+<div id="ref-siamese-cnns">
+<p>Chopra, S., R. Hadsell, and Y. LeCun. 2005. “Learning a Similarity Metric Discriminatively, with Application to Face Verification.” In <em>Proc. CVPR</em>.</p>
+</div>
+<div id="ref-protobuf">
+<p>Google. n.d. “Protocol Buffers.” <a href="http://code.google.com/apis/protocolbuffers/" class="uri">http://code.google.com/apis/protocolbuffers/</a>.</p>
+</div>
+<div id="ref-caffe">
+<p>Jia, Y., E. Shelhamer, J. Donahue, S. Karayev, J. Long, R. Girshick, S. Guadarrama, and T. Darrell. 2014. “Caffe: Convolutional Architecture for Fast Feature Embedding.” <em>ACM Multimedia Open Source</em>.</p>
+</div>
+<div id="ref-mnist">
+<p>LeCun, Y., C. Cortes, and C. J.C. Burges. 1999. “The MNIST Database of Handwritten Digits.” <em>Http://yann.lecun.com/exdb/mnist</em>.</p>
+</div>
+<div id="ref-mpi-caffe">
+<p>Lee, Stefan, Senthil Purushwalkam, Michael Cogswell, David J. Crandall, and Dhruv Batra. 2015. “Why M Heads Are Better Than One: Training a Diverse Ensemble of Deep Networks.” <em>ArXiv</em>. <a href="http://arxiv.org/abs/1511.06314" class="uri">http://arxiv.org/abs/1511.06314</a>.</p>
+</div>
+<div id="ref-car-image">
+<p>Mei, X. and Porikli, F. 2008. “Joint Tracking and Video Registration by Factorial Hidden Markov Models” <em>IEEE International Conference on Acoustics, Speech and Signal Processing (ICASSP)</em>.</p>
+</div>
+<div id="ref-deepid2">
+<p>Sun, Y., X. Wang, and X. Tang. 2014. “Deep Learning Face Representation by Joint Identification-Verification.” <em>Proc. NIPS</em>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>

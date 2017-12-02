@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+  <meta http-equiv="Content-Style-Type" content="text/css" />
+  <meta name="generator" content="pandoc" />
+  <title></title>
+  <style type="text/css">code{white-space: pre;}</style>
+  <style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+  </style>
+  <style type="text/css">
+    /* Color scheme stolen from Sergey Karayev */
+    a {
+    color: #1772d0;
+    text-decoration:none;
+    }
+    a:focus, a:hover {
+    color: #f09228;
+    text-decoration:none;
+    }
+    body,td,th,tr,p,a {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px
+    }
+    strong {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    }
+    heading {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 22px;
+    }
+    papertitle {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 14px;
+    font-weight: 700
+    }
+    name {
+    font-family: 'Lato', Verdana, Helvetica, sans-serif;
+    font-size: 32px;
+    }
+    .one
+    {
+    width: 160px;
+    height: 160px;
+    position: relative;
+    }
+    .two
+    {
+    width: 160px;
+    height: 160px;
+    position: absolute;
+    transition: opacity .2s ease-in-out;
+    -moz-transition: opacity .2s ease-in-out;
+    -webkit-transition: opacity .2s ease-in-out;
+    }
+    .fade {
+     transition: opacity .2s ease-in-out;
+     -moz-transition: opacity .2s ease-in-out;
+     -webkit-transition: opacity .2s ease-in-out;
+    }
+    span.highlight {
+        background-color: #ffffd0;
+    }
+  </style>
+</head>
+<body>
+<div id="centered" style="margin: 0 auto; width:800px; word-wrap: break-word;">
+<p><a href="http://joaoloula.github.io">Home</a></p>
+<p>In this post we'll explore Nilearn's future surface plotting capabilities through an example using seed-based resting state connectivity analysis. This is based on work done by Julia Huntenburg with whom I had the pleasure of collaborating on the 2016 Paris Brainhack.</p>
+<h2 id="setting-things-up">Setting things up</h2>
+<p>We start by importing the libraries we're gonna need:</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="im">from</span> nilearn <span class="im">import</span> plotting
+<span class="im">from</span> nilearn <span class="im">import</span> datasets
+<span class="im">from</span> scipy <span class="im">import</span> stats
+<span class="im">import</span> nibabel <span class="im">as</span> nb
+<span class="im">import</span> numpy <span class="im">as</span> np
+<span class="op">%</span>matplotlib inline</code></pre></div>
+<p>In this example we'll use the Rockland NKI enhanced resting state dataset <span class="citation">(Nooner et al. 2012)</span>, a dataset containing 100 subjects with ages ranging from 6 to 85 years that aims at characterizing brain development, maturation and aging.</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Retrieve the data</span>
+nki_dataset <span class="op">=</span> datasets.fetch_surf_nki_enhanced(n_subjects<span class="op">=</span><span class="dv">1</span>)
+
+<span class="co"># NKI resting state data set of one subject left hemisphere in fsaverage5 space</span>
+resting_state <span class="op">=</span> nki_dataset[<span class="st">&#39;func_left&#39;</span>][<span class="dv">0</span>]</code></pre></div>
+<p>We'll want to define regions of interest for our analysis: for this, we'll need a brain parcellation. For this purpose, we'll use the sulcal-depth based Destrieux cortical atlas <span class="citation">(Destrieux et al. 2009)</span>:</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Destrieux parcellation left hemisphere in fsaverage5 space</span>
+destrieux_atlas <span class="op">=</span> datasets.fetch_atlas_surf_destrieux()
+parcellation <span class="op">=</span> nb.freesurfer.read_annot(destrieux_atlas[<span class="st">&#39;annot_left&#39;</span>])</code></pre></div>
+<p>The Destrieux parcellation is based on the Fsaverage5 <span class="citation">(Fischl et al. 2004)</span> surface data, so we'll go ahead and fetch that as well so as to be able to plot our atlas.</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Retrieve fsaverage data</span>
+fsaverage <span class="op">=</span> datasets.fetch_surf_fsaverage5()
+
+<span class="co"># Fsaverage5 left hemisphere surface mesh files</span>
+fsaverage5_pial <span class="op">=</span> fsaverage[<span class="st">&#39;pial_left&#39;</span>][<span class="dv">0</span>]
+fsaverage5_inflated <span class="op">=</span> fsaverage[<span class="st">&#39;infl_left&#39;</span>][<span class="dv">0</span>]
+sulcal_depth_map <span class="op">=</span> fsaverage[<span class="st">&#39;sulc_left&#39;</span>][<span class="dv">0</span>]</code></pre></div>
+<p>Last steps needed for our analysis: we'll pick a region as seed (we'll choose the dorsal posterior cingulate gyrus) and extract the time-series correspondent to it. Next, we want to calculate statistical correlation between the seed time-series and time-series of other cortical regions. For our measure of correlation, we'll use the Pearson product-moment correlation coefficient, given by $ _{X, Y} $.</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Load resting state time series and parcellation</span>
+timeseries <span class="op">=</span> plotting.surf_plotting.check_surf_data(resting_state)
+
+<span class="co"># Extract seed region: dorsal posterior cingulate gyrus</span>
+region <span class="op">=</span> <span class="st">&#39;G_cingul-Post-dorsal&#39;</span>
+labels <span class="op">=</span> np.where(parcellation[<span class="dv">0</span>] <span class="op">==</span> parcellation[<span class="dv">2</span>].index(region))[<span class="dv">0</span>]
+
+<span class="co"># Extract time series from seed region</span>
+seed_timeseries <span class="op">=</span> np.mean(timeseries[labels], axis<span class="op">=</span><span class="dv">0</span>)
+
+<span class="co"># Calculate Pearson product-moment correlation coefficient between seed</span>
+<span class="co"># time series and timeseries of all cortical nodes of the hemisphere</span>
+stat_map <span class="op">=</span> np.zeros(timeseries.shape[<span class="dv">0</span>])
+<span class="cf">for</span> i <span class="op">in</span> <span class="bu">range</span>(timeseries.shape[<span class="dv">0</span>]):
+    stat_map[i] <span class="op">=</span> stats.pearsonr(seed_timeseries, timeseries[i])[<span class="dv">0</span>]
+
+<span class="co"># Re-mask previously masked nodes (medial wall)</span>
+stat_map[np.where(np.mean(timeseries, axis<span class="op">=</span><span class="dv">1</span>) <span class="op">==</span> <span class="dv">0</span>)] <span class="op">=</span> <span class="dv">0</span></code></pre></div>
+<h2 id="plotting">Plotting</h2>
+<p>Now for the actual plotting: we start by plotting the seed:</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Display ROI on surface</span>
+plotting.plot_surf_roi(fsaverage5_pial, roi_map<span class="op">=</span>labels, hemi<span class="op">=</span><span class="st">&#39;left&#39;</span>,
+                       view<span class="op">=</span><span class="st">&#39;medial&#39;</span>, bg_map<span class="op">=</span>sulcal_depth_map, bg_on_data<span class="op">=</span><span class="va">True</span>)
+plotting.show()</code></pre></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/roi.png"/>
+</p>
+<p>Next, we'll plot the correlation statistical map in both the lateral and medial views:</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Display unthresholded stat map in lateral and medial view</span>
+<span class="co"># dimmed background</span>
+plotting.plot_surf_stat_map(fsaverage5_pial, stat_map<span class="op">=</span>stat_map, hemi<span class="op">=</span><span class="st">&#39;left&#39;</span>,
+                            bg_map<span class="op">=</span>sulcal_depth_map, bg_on_data<span class="op">=</span><span class="va">True</span>,
+                            darkness<span class="op">=</span>.<span class="dv">5</span>)
+plotting.plot_surf_stat_map(fsaverage5_pial, stat_map<span class="op">=</span>stat_map, hemi<span class="op">=</span><span class="st">&#39;left&#39;</span>,
+                            view<span class="op">=</span><span class="st">&#39;medial&#39;</span>, bg_map<span class="op">=</span>sulcal_depth_map,
+                            bg_on_data<span class="op">=</span><span class="va">True</span>, darkness<span class="op">=</span>.<span class="dv">5</span>)
+plotting.show()</code></pre></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/lateral.png"/>
+</p>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/medial.png"/>
+</p>
+<p>Finally, to show off Nilearn's plotting capabilities, we'll play a little with colormaps and transparency:</p>
+<div class="sourceCode"  style="background-color: #272822;color: #F8F8F2"><pre class="sourceCode python"><code class="sourceCode python"><span class="co"># Displaying a thresholded stat map with a different colormap and transparency</span>
+plotting.plot_surf_stat_map(fsaverage5_pial, stat_map<span class="op">=</span>stat_map, hemi<span class="op">=</span><span class="st">&#39;left&#39;</span>,
+                            bg_map<span class="op">=</span>sulcal_depth_map, bg_on_data<span class="op">=</span><span class="va">True</span>,
+                            cmap<span class="op">=</span><span class="st">&#39;Spectral&#39;</span>, threshold<span class="op">=</span>.<span class="dv">6</span>, alpha<span class="op">=</span>.<span class="dv">5</span>)
+
+plotting.show()</code></pre></div>
+<p align="center">
+<img src = "https://raw.githubusercontent.com/Joaoloula/joaoloula.github.io-src/master/content/posts/surf-plotting/alpha.png"/>
+</p>
+<div id="refs" class="references">
+<div id="ref-destrieux">
+<p>Destrieux, C., Fischl B., Dale A. M., and Halgren A. 2009. “A Sulcal Depth-Based Anatomical Parcellation of the Cerebral Cortex.” <em>Neuroimage</em>.</p>
+</div>
+<div id="ref-fsaverage5">
+<p>Fischl, B., A. van der Kouwe, C. Destrieux, E. Halgren, F. Ségonne, D. H. Salat, E. Busa, et al. 2004. “Automatically Parcellating the Human Cerebral Cortex.” <em>Cerebral Cortex</em>.</p>
+</div>
+<div id="ref-nki">
+<p>Nooner, K. B., S. J. Colcombe, R. H. Tobe, M. Mennes, M. M. Benedict, A. L. Moreno, S. Panek L. J. Brown, et al. 2012. “The NKI-Rockland Sample: A Model for Accelerating the Pace of Discovery Science in Psychiatry.” <em>Frontiers in Neuroscience</em>.</p>
+</div>
+</div>
+</div>
+</body>
+</html>
