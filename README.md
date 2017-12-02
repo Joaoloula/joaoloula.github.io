@@ -1,2 +1,0 @@
-# joaoloula.github.io
-Blog
