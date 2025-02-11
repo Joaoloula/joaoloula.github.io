@@ -108,31 +108,24 @@
 
   <table width="100%" align="center" border="0" cellspacing="0" cellpadding="20">
 
-    <tr onmouseout="cogsci2020_stop()" onmouseover="cogsci2020_start()" >
+    <tr onmouseout="iclr2025_stop()" onmouseover="iclr2025_start()" >
       <td width="45%">
 
         <img src="loula_cogsci2020_landscape.gif" width="350px" height="215px" />
       </td>
       <td valign="top" width="55%">
         <p>
-	  <a href="A_TAMP_Approach_to_the_Development_of_Planning.pdf">
-            <papertitle>A Task and Motion Approach to the Development of Planning</papertitle>
+	  <a href="https://openreview.net/forum?id=xoXn62FzD0">
+            <papertitle>Syntactic and Semantic Control of Large Language Models via Sequential Monte Carlo</papertitle>
 	  </a>
 	  <br>
     <strong>João Loula</strong>,
-    <a href="https://web.mit.edu/krallen/www/">Kelsey Allen</a>,
-    <a href="http://web.mit.edu/cocosci/josh.html">Josh Tenenbaum</a>
+    João Loula, Benjamin LeBrun, Li Du, Ben Lipkin, Clemente Pasti, Gabriel Grand, Tianyu Liu, Yahya Emara, Marjorie Freedman, Jason Eisner, Ryan Cotterell, Vikash Mansinghka, Alexander K. Lew, Tim Vieira, Timothy J. O'Donnell
 	   <br>
-        <em>CogSci</em>, 2020 <br>
+        <em>ICLR</em>, 2025 (Oral, <1.8% of papers) <br>
         <p></p>
         <p>
-        Developmental psychology presents us with a puzzle: though
-        children are remarkably apt at planning their actions, they suf-
-        fer from surprising yet consistent shortcomings. We argue that
-        these patterns of triumph and failure can be broadly captured
-        by the framework of task and motion planning, where plans
-        are hybrid entities consisting of both a structured, symbolic
-        skeleton and a continuous, low-level trajectory.
+          A wide range of LLM applications require generating text that conforms to syntactic or semantic constraints. Imposing such constraints nontrivially alters the distribution over sequences, usually making exact sampling intractable. In this work, building on the Language Model Probabilistic Programming framework of Lew et al. (2023), we develop an approach to approximate inference for controlled LLM generation based on sequential Monte Carlo (SMC). Our SMC framework allows us to flexibly incorporate domain- and problem-specific constraints at inference time, and efficiently reallocate computation in light of new information during the course of generation. We demonstrate that our approach improves downstream performance on four challenging domains---Python code generation for data science, text-to-SQL, goal inference, and molecule synthesis. We compare to a number of alternative and ablated approaches, showing that our accuracy improvements are driven by better approximation to the full Bayesian posterior.
       </td>
     </tr>
 
