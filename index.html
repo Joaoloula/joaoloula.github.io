@@ -129,59 +129,48 @@
       </td>
     </tr>
 
-    <tr onmouseout="cogsci2020_stop()" onmouseover="cogsci2020_start()" >
+    <tr onmouseout="under_review_stop()" onmouseover="under_review_start()" >
       <td width="45%">
 
         <img src="loula_cogsci2020_landscape.gif" width="350px" height="215px" />
       </td>
       <td valign="top" width="55%">
         <p>
-	  <a href="A_TAMP_Approach_to_the_Development_of_Planning.pdf">
-            <papertitle>A Task and Motion Approach to the Development of Planning</papertitle>
-	  </a>
+	  <!-- <a href="pdf"> -->
+        <papertitle>Scalable tabular data modeling via GPU-accelerated probabilistic programming</papertitle>
+	  <!-- </a> -->
 	  <br>
-    <strong>João Loula</strong>,
-    <a href="https://web.mit.edu/krallen/www/">Kelsey Allen</a>,
-    <a href="http://web.mit.edu/cocosci/josh.html">Josh Tenenbaum</a>
+    <strong>João Loula</strong>, Ulrich Schaechtle, Josh Tenenbaum, Tim O'Donnell, Vikash Mansinghka
+    <!-- <a href="https://web.mit.edu/krallen/www/">Kelsey Allen</a>, -->
+    <!-- <a href="http://web.mit.edu/cocosci/josh.html">Josh Tenenbaum</a> -->
 	   <br>
-        <em>CogSci</em>, 2020 <br>
+        <em>Working Paper</em>, 2025 <br>
         <p></p>
         <p>
-        Developmental psychology presents us with a puzzle: though
-        children are remarkably apt at planning their actions, they suf-
-        fer from surprising yet consistent shortcomings. We argue that
-        these patterns of triumph and failure can be broadly captured
-        by the framework of task and motion planning, where plans
-        are hybrid entities consisting of both a structured, symbolic
-        skeleton and a continuous, low-level trajectory.
+          We present GenJaxMix, a mixture of experts generative model for tabular data that can be trained efficiently, via a novel GPU-based sequential Monte Carlo algorithm, as well as queried efficiently, via dedicated GPU implementations of sampling, conditioning, likelihood, and marginalization, whose combination can express a wide range of downstream tasks.
+          Through empirical evaluations, we show that GenJaxMix generates more accurate synthetic data than generative models based on diffusion models, transformers, and random forests, while being faster to train. 
+          We likewise show that it can perform downstream tasks, such as conditional synthetic data generation, anomaly detection, multiple imputation, and relationship discovery, better than commonly used methods, while being much more query-time efficient. 
       </td>
     </tr>
 
-    <tr onmouseout="cogsci2020_stop()" onmouseover="cogsci2020_start()" >
+    <tr onmouseout="icml2024_stop()" onmouseover="icml2024_start()" >
       <td width="45%">
 
         <img src="loula_cogsci2020_landscape.gif" width="350px" height="215px" />
       </td>
       <td valign="top" width="55%">
         <p>
-	  <a href="A_TAMP_Approach_to_the_Development_of_Planning.pdf">
-            <papertitle>A Task and Motion Approach to the Development of Planning</papertitle>
+	  <a href="https://openreview.net/forum?id=Sm1KnFlx0H&referrer=%5Bthe%20profile%20of%20João%20Loula%5D(%2Fprofile%3Fid%3D~João_Loula1)">
+            <papertitle>Learning Generative Population Models From Multiple Clinical Datasets Via Probabilistic Programming</papertitle>
 	  </a>
 	  <br>
     <strong>João Loula</strong>,
-    <a href="https://web.mit.edu/krallen/www/">Kelsey Allen</a>,
-    <a href="http://web.mit.edu/cocosci/josh.html">Josh Tenenbaum</a>
+    Katherine M. Collins, Ulrich Schaechtle, Joshua B. Tenenbaum, Adrian Weller, Feras Saad, Timothy J. O'Donnell, Vikash Mansinghka
 	   <br>
-        <em>CogSci</em>, 2020 <br>
+        <em>ICML AccMLBio</em>, 2024 <br>
         <p></p>
         <p>
-        Developmental psychology presents us with a puzzle: though
-        children are remarkably apt at planning their actions, they suf-
-        fer from surprising yet consistent shortcomings. We argue that
-        these patterns of triumph and failure can be broadly captured
-        by the framework of task and motion planning, where plans
-        are hybrid entities consisting of both a structured, symbolic
-        skeleton and a continuous, low-level trajectory.
+        Accurate, efficient generative models of clinical populations could accelerate clinical research and improve patient outcomes. For example, such models could infer probable treatment outcomes for different subpopulations, generate high-fidelity synthetic data that can be shared across organizational boundaries, and discover new relationships among clinical variables. Using Bayesian structure learning, we show that it is possible to learn probabilistic program models of clinical populations by combining data from multiple, sparsely overlapping clinical datasets. Through experiments with multiple clinical trials and real-world evidence from census health surveys, we show that our model generates higher quality synthetic data than neural network baselines, supports more accurate inferences across datasets than traditional statistical methods, and can be queried more efficiently than both, opening up new avenues for accessible and efficient AI assistance in clinical research.
       </td>
     </tr>
 
